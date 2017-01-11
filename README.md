@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/4ap2v3ybhac9c3lh/branch/master?svg=true)](https://ci.appveyor.com/project/luau-project/luainstaller/branch/master)
+
 # Overview
 
 The toolset available here aids the process to download, build and install Lua versions directly from http://www.lua.org , either manually or programmatically.

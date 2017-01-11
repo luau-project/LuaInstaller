@@ -1,0 +1,25 @@
+version: 1.0.{build}
+configuration: Release
+platform: Any CPU
+before_build:
+- cmd: nuget restore LuaInstaller.sln
+build:
+  project: LuaInstaller.sln
+  verbosity: minimal
+on_success:
+- cmd: >-
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe list-lua
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe list-vs
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe list-vs-x86
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe list-vs-x64
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe list-win-sdk
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe "/?"
+
+    LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe help
