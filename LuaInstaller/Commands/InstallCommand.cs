@@ -154,9 +154,14 @@ namespace LuaInstaller.Commands
 
                 switch (viewModel.Progress)
                 {
-                    case InstallationProgress.Download:
+                    case InstallationProgress.None:
                         {
                             viewModel.Status = "Unable to create destination directory or download sources.";
+                        }
+                        break;
+                    case InstallationProgress.Download:
+                        {
+                            viewModel.Status = "Failed to compile DLL.";
                         }
                         break;
                     case InstallationProgress.CompileDll:

@@ -34,8 +34,23 @@ namespace LuaInstaller.Core
                 }
                 else
                 {
-                    includeInfo = new DirectoryInfo(includeDir);
-                    libInfo = new DirectoryInfo(libDir).EnumerateDirectories().LastOrDefault();
+                    includeInfo = (
+                        from versionDir in Directory.EnumerateDirectories(includeDir)
+                        where versionDir.StartsWith(version.ProductVersion)
+                        select new DirectoryInfo(versionDir)
+                    ).FirstOrDefault();
+
+                    libInfo = (
+                        from versionDir in Directory.EnumerateDirectories(libDir)
+                        where versionDir.StartsWith(version.ProductVersion)
+                        select new DirectoryInfo(versionDir)
+                    ).FirstOrDefault();
+
+                    if (includeInfo == null || libInfo == null)
+                    {
+                        includeInfo = new DirectoryInfo(includeDir);
+                        libInfo = new DirectoryInfo(libDir).EnumerateDirectories().LastOrDefault();
+                    }
                 }
 
                 if (includeInfo != null && libInfo != null)
