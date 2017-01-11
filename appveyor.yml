@@ -7,5 +7,4 @@ build:
   project: LuaInstaller.sln
   verbosity: minimal
 on_success:
-- ps: >-
-  .\appveyor.ps1
+- ps: .\appveyor.ps1
