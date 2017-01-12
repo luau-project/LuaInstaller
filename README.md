@@ -29,3 +29,13 @@ Furthermore, the user **MUST HAVE** .NET Framework 4.0 or newer installed to run
 # Future Work
 
 We want to ease the process to have latest verions of Lua and LuaRocks installed in the system, so LuaRocks support is on top of our todo list.
+
+The following features might come in next releases
+- Logging
+- LuaRocks installation
+- Full rewrite of the project
+
+# Contributors
+
+Special thanks goes to [warlockx](https://github.com/Warlockx) for bug hunting and valuable suggestions that are going to be incorporated soon.
+Also, I would like to thanks [AppVeyor](https://www.appveyor.com) for bug hunting and CI through their servers.
