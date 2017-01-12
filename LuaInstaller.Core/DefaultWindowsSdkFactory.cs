@@ -36,13 +36,13 @@ namespace LuaInstaller.Core
                 {
                     includeInfo = (
                         from versionDir in Directory.EnumerateDirectories(includeDir)
-                        where versionDir.StartsWith(version.ProductVersion)
+                        where Path.GetFileName(versionDir).StartsWith(version.ProductVersion)
                         select new DirectoryInfo(versionDir)
                     ).FirstOrDefault();
 
                     libInfo = (
                         from versionDir in Directory.EnumerateDirectories(libDir)
-                        where versionDir.StartsWith(version.ProductVersion)
+                        where Path.GetFileName(versionDir).StartsWith(version.ProductVersion)
                         select new DirectoryInfo(versionDir)
                     ).FirstOrDefault();
 
