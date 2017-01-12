@@ -1,3 +1,8 @@
+Get-Item 'HKLM:\SOFTWARE\Wow6432node\Microsoft\Microsoft SDKs\Windows\*' | Where-Object { $_.Name -match '[vV]\d+\.\d+$' } | ForEach-Object { Get-ChildItem (Join-Path $_.GetValue("InstallationFolder") -ChildPath include | Join-Path -ChildPath '*' | Join-Path -ChildPath 'string.h') -Recurse | ForEach-Object { $_.FullName }; Get-ChildItem (Join-Path $_.GetValue("InstallationFolder") -ChildPath lib | Join-Path -ChildPath '*' | Join-Path -ChildPath 'user32.lib') -Recurse | ForEach-Object { $_.FullName }; };
+
+Get-Item 'HKLM:\SOFTWARE\Microsoft\Microsoft SDKs\Windows\*' | Where-Object { $_.Name -match '[vV]\d+\.\d+$' } | ForEach-Object { Get-ChildItem (Join-Path $_.GetValue("InstallationFolder") -ChildPath include | Join-Path -ChildPath '*' | Join-Path -ChildPath 'string.h') -Recurse | ForEach-Object { $_.FullName }; Get-ChildItem (Join-Path $_.GetValue("InstallationFolder") -ChildPath lib | Join-Path -ChildPath '*' | Join-Path -ChildPath 'user32.lib') -Recurse | ForEach-Object { $_.FullName }; };
+
+<#
 $console = 'LuaInstaller.Console\bin\Release\LuaInstaller.Console.exe';
 
 $infoCommands = '/?',
@@ -39,3 +44,4 @@ foreach ($v in $versions) {
     Remove-Item -Path $destDir -Recurse -Force;
     Write-Host;
 }
+#>
