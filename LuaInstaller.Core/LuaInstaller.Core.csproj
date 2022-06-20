@@ -1,110 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8C9C9007-387C-4DB3-856D-96A005F5B9FD}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LuaInstaller.Core</RootNamespace>
-    <AssemblyName>LuaInstaller.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworks>netstandard2.1;net461</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="3.2.2146" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="EnvironmentVariablesException.cs" />
-    <Compile Include="InstallationProgress.cs" />
-    <Compile Include="InstallationProgressEventArgs.cs" />
-    <Compile Include="IVisualStudioVersionLocator.cs" />
-    <Compile Include="LinkCompilerException.cs" />
-    <Compile Include="CompileCompilerException.cs" />
-    <Compile Include="BuildCompilerException.cs" />
-    <Compile Include="BuildDllException.cs" />
-    <Compile Include="LinkInterpreterException.cs" />
-    <Compile Include="CompileInterpreterException.cs" />
-    <Compile Include="BuildInterpreterException.cs" />
-    <Compile Include="LinkDllException.cs" />
-    <Compile Include="CompileDllException.cs" />
-    <Compile Include="DefaultVisualStudioFactory.cs" />
-    <Compile Include="DefaultWindowsSdkFactory.cs" />
-    <Compile Include="ICompiler.cs" />
-    <Compile Include="ILinker.cs" />
-    <Compile Include="IncludeDirectories.cs" />
-    <Compile Include="InstallationManager.cs" />
-    <Compile Include="IVisualStudioFactory.cs" />
-    <Compile Include="IInstalledComponents.cs" />
-    <Compile Include="IWindowsSdkFactory.cs" />
-    <Compile Include="LuaDestinationDirectory.cs" />
-    <Compile Include="LuaSourcesDirectory.cs" />
-    <Compile Include="LuaVersion.cs" />
-    <Compile Include="LuaWebsite.cs" />
-    <Compile Include="VisualStudio.cs" />
-    <Compile Include="VisualStudioCompiler.cs" />
-    <Compile Include="VisualStudioVersionsFromSetupApi.cs" />
-    <Compile Include="VisualStudioLinker.cs" />
-    <Compile Include="WindowsSdk.cs" />
-    <Compile Include="InstalledComponents.cs" />
-    <Compile Include="LibPathDirectories.cs" />
-    <Compile Include="ReadOnlyStringArray.cs" />
-    <Compile Include="Architecture.cs" />
-    <Compile Include="VisualStudioVersionsFromRegQuery.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VisualStudioToolset.cs" />
-    <Compile Include="VisualStudioVersion.cs" />
-    <Compile Include="WindowsSdkRegQuery.cs" />
-    <Compile Include="WindowsSdkVersion.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\build\Microsoft.VisualStudio.Setup.Configuration.Interop.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\build\Microsoft.VisualStudio.Setup.Configuration.Interop.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\build\Microsoft.VisualStudio.Setup.Configuration.Interop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.3.2.2146\build\Microsoft.VisualStudio.Setup.Configuration.Interop.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

@@ -6,9 +6,8 @@ namespace LuaInstaller.Core
     {
         private readonly string _cl;
         private readonly string _link;
-        private readonly string _ml;
 
-        public VisualStudioToolset(string cl, string link, string ml)
+        public VisualStudioToolset(string cl, string link)
         {
             if (cl == null)
             {
@@ -19,15 +18,9 @@ namespace LuaInstaller.Core
             {
                 throw new ArgumentNullException("link");
             }
-            
-            if (ml == null)
-            {
-                throw new ArgumentNullException("ml");
-            }
-            
+
             _cl = cl;
             _link = link;
-            _ml = ml;
         }
         
         public string Cl
@@ -43,14 +36,6 @@ namespace LuaInstaller.Core
             get
             {
                 return _link;
-            }
-        }
-
-        public string Ml
-        {
-            get
-            {
-                return _ml;
             }
         }
     }

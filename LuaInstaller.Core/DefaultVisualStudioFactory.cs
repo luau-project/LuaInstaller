@@ -15,11 +15,10 @@ namespace LuaInstaller.Core
 
                 string cl = Path.Combine(toolsetBinDir, "cl.exe");
                 string link = Path.Combine(toolsetBinDir, "link.exe");
-                string ml = Path.Combine(toolsetBinDir, "ml.exe");
 
-                if (File.Exists(cl) && File.Exists(link) && File.Exists(ml))
+                if (File.Exists(cl) && File.Exists(link))
                 {
-                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link, ml);
+                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link);
                     
                     string include = Path.Combine(version.VcDir, "include");
                     string lib = Path.Combine(version.VcDir, "lib");
@@ -39,11 +38,10 @@ namespace LuaInstaller.Core
 
                 string cl = Path.Combine(toolsetBinDir, "cl.exe");
                 string link = Path.Combine(toolsetBinDir, "link.exe");
-                string ml = Path.Combine(toolsetBinDir, "ml.exe");
 
-                if (File.Exists(cl) && File.Exists(link) && File.Exists(ml))
+                if (File.Exists(cl) && File.Exists(link))
                 {
-                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link, ml);
+                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link);
 
                     string include = Path.Combine(version.VcDir, "include");
                     string lib = Path.Combine(version.VcDir, "lib", "amd64");
@@ -75,11 +73,10 @@ namespace LuaInstaller.Core
                 string toolsetDir = Path.Combine(version.VcDir, "bin", "Host" + archStr, archStr);
                 string cl = Path.Combine(toolsetDir, "cl.exe");
                 string link = Path.Combine(toolsetDir, "link.exe");
-                string ml = Path.Combine(toolsetDir, arch == Architecture.X64 ? "ml64.exe" : "ml.exe");
 
-                if (File.Exists(cl) && File.Exists(link) && File.Exists(ml))
+                if (File.Exists(cl) && File.Exists(link))
                 {
-                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link, ml);
+                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link);
 
                     IncludeDirectories includeDirs = new IncludeDirectories(new string[1] { include });
                     LibPathDirectories libDirs = new LibPathDirectories(new string[1] { lib });

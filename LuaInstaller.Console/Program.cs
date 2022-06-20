@@ -13,9 +13,9 @@ namespace LuaInstaller.Console
         private static void Help()
         {
             Write(@"
------------
+------------------------------------------------------
 Information
------------
+------------------------------------------------------
 
 LuaInstaller.Console.exe [ /? | help ]
     Displays this help message
@@ -35,9 +35,9 @@ LuaInstaller.Console.exe list-vs-x64
 LuaInstaller.Console.exe list-win-sdk
     Lists all Windows SDK found
 
-------------
+------------------------------------------------------
 Installation
-------------
+------------------------------------------------------
 
 LuaInstaller.Console.exe install { OPTION=VALUE }
 
@@ -73,23 +73,23 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
         specified, environment variables
         are not set at all.
 
---------
+------------------------------------------------------
 Examples
---------
+------------------------------------------------------
 
-1) Installs the latest Lua available in the website
+1) Installs the latest Lua available on Lua's website
 in the current directory, using the latest versions
 of Visual Studio and Windows SDK, building the source
 code for x86 platforms
 
     LuaInstaller.Console.exe install
 
-2) Installs Lua 5.3.0 in the current directory,
+2) Installs Lua 5.3.6 in the current directory,
 using the latest versions of Visual Studio and
 Windows SDK, building the source code for x64
 platforms
 
-    LuaInstaller.Console.exe install version=5.3.0 arch=x64
+    LuaInstaller.Console.exe install version=5.3.6 arch=x64
 
 3) Installs Lua 5.1.5 in the folder
 'C:\Program Files (x86)\Lua',

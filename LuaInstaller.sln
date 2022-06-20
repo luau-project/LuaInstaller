@@ -1,42 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller.Core", "LuaInstaller.Core\LuaInstaller.Core.csproj", "{8C9C9007-387C-4DB3-856D-96A005F5B9FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller", "LuaInstaller\LuaInstaller.csproj", "{6E44941C-E8A5-4D4E-973E-DB4DF1A5E067}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller.Console", "LuaInstaller.Console\LuaInstaller.Console.csproj", "{4885D0BA-CF19-4450-90A1-B6DAE09C276C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller.Console", "LuaInstaller.Console\LuaInstaller.Console.csproj", "{B4D9A163-9B06-4772-94E4-2E951DA21569}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller", "LuaInstaller\LuaInstaller.csproj", "{419F546F-468F-4423-B144-9F45C20D5922}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3794359F-596E-4EF9-B47E-B291A7FC37DD}"
-	ProjectSection(SolutionItems) = preProject
-		appveyor.ps1 = appveyor.ps1
-		appveyor.yml = appveyor.yml
-		LICENSE.md = LICENSE.md
-		README.md = README.md
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuaInstaller.Core", "LuaInstaller.Core\LuaInstaller.Core.csproj", "{2E7976DC-3027-41FB-9323-819635A4DFAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8C9C9007-387C-4DB3-856D-96A005F5B9FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C9C9007-387C-4DB3-856D-96A005F5B9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C9C9007-387C-4DB3-856D-96A005F5B9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C9C9007-387C-4DB3-856D-96A005F5B9FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4885D0BA-CF19-4450-90A1-B6DAE09C276C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4885D0BA-CF19-4450-90A1-B6DAE09C276C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4885D0BA-CF19-4450-90A1-B6DAE09C276C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4885D0BA-CF19-4450-90A1-B6DAE09C276C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{419F546F-468F-4423-B144-9F45C20D5922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{419F546F-468F-4423-B144-9F45C20D5922}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{419F546F-468F-4423-B144-9F45C20D5922}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{419F546F-468F-4423-B144-9F45C20D5922}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E44941C-E8A5-4D4E-973E-DB4DF1A5E067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E44941C-E8A5-4D4E-973E-DB4DF1A5E067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E44941C-E8A5-4D4E-973E-DB4DF1A5E067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E44941C-E8A5-4D4E-973E-DB4DF1A5E067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4D9A163-9B06-4772-94E4-2E951DA21569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4D9A163-9B06-4772-94E4-2E951DA21569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4D9A163-9B06-4772-94E4-2E951DA21569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4D9A163-9B06-4772-94E4-2E951DA21569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E7976DC-3027-41FB-9323-819635A4DFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7976DC-3027-41FB-9323-819635A4DFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7976DC-3027-41FB-9323-819635A4DFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7976DC-3027-41FB-9323-819635A4DFAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
