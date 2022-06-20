@@ -80,20 +80,21 @@
             </ComboBox>
 
             <Label Grid.Column="0" Grid.Row="8" Content="Windows SDK"/>
-            <ComboBox Grid.Column="1" Grid.Row="8" VerticalContentAlignment="Center" SelectedItem="{Binding SelectedWinSdkVersion}" ItemsSource="{Binding WinSdkVersions}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Version}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-
-            <CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}"/>
+			<ComboBox Grid.Column="1" Grid.Row="8" VerticalContentAlignment="Center" SelectedItem="{Binding SelectedWinSdkVersion}" ItemsSource="{Binding WinSdkVersions}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Version}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+			
+			<!--<CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}"/>
 
             <StackPanel IsEnabled="{Binding SetEnvironmentVariables}" Grid.Column="1" Grid.Row="12" Orientation="Horizontal">
                 <RadioButton Margin="20,0,10,0" Content="User" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=User}"/>
                 <RadioButton Content="Machine" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=Machine}"/>
-            </StackPanel>
+            </StackPanel>-->
+			
         </Grid>
         
     </DockPanel>

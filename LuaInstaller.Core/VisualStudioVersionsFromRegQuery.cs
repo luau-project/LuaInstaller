@@ -6,16 +6,16 @@ using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
-    public static class VisualStudioRegQuery
+    public class VisualStudioVersionsFromRegQuery : IVisualStudioVersionLocator
     {
         private static readonly Regex _rgx;
 
-        static VisualStudioRegQuery()
+        static VisualStudioVersionsFromRegQuery()
         {
             _rgx = new Regex(@"(\d+)\.(\d+)$");
         }
 
-        private static VisualStudioVersion[] GetVersionsCore(string initialReg)
+        private VisualStudioVersion[] GetVersionsCore(string initialReg)
         {
             SortedSet<VisualStudioVersion> values = new SortedSet<VisualStudioVersion>();
 
@@ -46,12 +46,12 @@ namespace LuaInstaller.Core
                                         {
                                             if (vcReg != null)
                                             {
-                                                int major = int.Parse(match.Groups[1].Value);
-                                                int minor = int.Parse(match.Groups[2].Value);
                                                 string vcDir = (string)(vcReg.GetValue("ProductDir"));
 
                                                 if (vcDir != null && Directory.Exists(vcDir))
                                                 {
+                                                    int major = int.Parse(match.Groups[1].Value);
+                                                    int minor = int.Parse(match.Groups[2].Value);
                                                     values.Add(new VisualStudioVersion(major, minor, vsDir, vcDir));
                                                 }
                                             }
@@ -69,7 +69,7 @@ namespace LuaInstaller.Core
             return result;
         }
 
-        public static VisualStudioVersion[] GetVersions()
+        public VisualStudioVersion[] GetVersions()
         {
             return GetVersionsCore(Environment.Is64BitOperatingSystem ?
                 @"SOFTWARE\WOW6432Node\Microsoft\VisualStudio" :

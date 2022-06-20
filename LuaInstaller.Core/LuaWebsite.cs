@@ -82,7 +82,7 @@ namespace LuaInstaller.Core
                 {
                     using (GZipInputStream gzs = new GZipInputStream(fs))
                     {
-                        using (TarArchive tar = TarArchive.CreateInputTarArchive(gzs))
+                        using (TarArchive tar = TarArchive.CreateInputTarArchive(gzs, null))
                         {
                             tar.ExtractContents(destDir);
                         }

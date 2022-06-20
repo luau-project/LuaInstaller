@@ -274,7 +274,7 @@ namespace LuaInstaller.ViewModels
 
             status = string.Empty;
             progress = InstallationProgress.None;
-            setEnvironmentVariables = true;
+            setEnvironmentVariables = false;
             variableTarget = EnvironmentVariableTarget.User;
 
             destinationDir = Path.Combine(
