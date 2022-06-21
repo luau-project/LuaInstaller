@@ -1,10 +1,12 @@
 version: 1.0.{build}
 
-build: off
+image: Visual Studio 2022
+
+configuration: Release
+
+platform: Any CPU
 
 install:
-- ps: Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
-- ps: '& $env:temp\dotnet-install.ps1 -Architecture x64 -Version "6.0.301" -InstallDir "$env:ProgramFiles\dotnet"'
+- pwsh: .\appveyor.ps1
 
-build_script:
-- ps: .\appveyor.ps1
+build: off
