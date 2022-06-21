@@ -4,3 +4,4 @@ install:
 - ps: '& $env:temp\dotnet-install.ps1 -Architecture x64 -Version "6.0.301" -InstallDir "$env:ProgramFiles\dotnet"'
 build_script:
 - ps: .\appveyor.ps1
+build: off
