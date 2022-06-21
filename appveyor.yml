@@ -1,14 +1,6 @@
 version: 1.0.{build}
-configuration: Release
-platform: x64
 install:
 - ps: Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
 - ps: '& $env:temp\dotnet-install.ps1 -Architecture x64 -Version "6.0.301" -InstallDir "$env:ProgramFiles\dotnet"'
-before_build:
-- cmd: dotnet restore LuaInstaller.sln
-build:
-  verbosity: minimal
-dotnet_csproj:
-  file: '**\*.csproj'
-on_success:
+build_script:
 - ps: .\appveyor.ps1
