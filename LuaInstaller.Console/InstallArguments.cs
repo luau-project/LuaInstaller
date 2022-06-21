@@ -77,8 +77,10 @@ namespace LuaInstaller.Console
 
         public void Process(string[] args, int index)
         {
-            Regex rgx = new Regex(@"^([^\=]+)\=(.+)$");
-            Match m = null;
+            Regex keyValueRgx = new Regex(@"^([^\=]+)\=(.+)$");
+            Match keyValueMatch = null;
+
+            Regex majorMinorRgx = new Regex(@"^(\d+)\.(\d+)$");
             
             string archArg = null;
             string vsVer = null;
@@ -89,12 +91,12 @@ namespace LuaInstaller.Console
 
             while (i < nargs)
             {
-                m = rgx.Match(args[i]);
+                keyValueMatch = keyValueRgx.Match(args[i]);
 
-                if (m.Success)
+                if (keyValueMatch.Success)
                 {
-                    string key = m.Groups[1].Value;
-                    string value = m.Groups[2].Value;
+                    string key = keyValueMatch.Groups[1].Value;
+                    string value = keyValueMatch.Groups[2].Value;
 
                     switch (key)
                     {
@@ -211,7 +213,7 @@ namespace LuaInstaller.Console
 
             if (archArg == null)
             {
-                arch = Architecture.X86;
+                arch = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
             }
             else
             {
@@ -231,7 +233,19 @@ namespace LuaInstaller.Console
                         }
                         else
                         {
-                            vs = components.AllVisualStudioX86().FirstOrDefault(v => v.Version.ToString() == vsVer);
+                            Match vsVerMatch = majorMinorRgx.Match(vsVer);
+                            if (vsVerMatch.Success)
+                            {
+                                GroupCollection groups = vsVerMatch.Groups;
+                                int major = int.Parse(groups[1].Value);
+                                int minor = int.Parse(groups[2].Value);
+
+                                vs = components.AllVisualStudioX86().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+                            }
+                            else
+                            {
+                                vs = components.AllVisualStudioX86().FirstOrDefault(v => v.Version.ToString() == vsVer);
+                            }
                         }
 
                         if (winsdkVer == null)
@@ -240,7 +254,19 @@ namespace LuaInstaller.Console
                         }
                         else
                         {
-                            winsdk = components.AllWindowsSdkX86().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
+                            Match winSdkMatch = majorMinorRgx.Match(winsdkVer);
+                            if (winSdkMatch.Success)
+                            {
+                                GroupCollection groups = winSdkMatch.Groups;
+                                int major = int.Parse(groups[1].Value);
+                                int minor = int.Parse(groups[2].Value);
+
+                                winsdk = components.AllWindowsSdkX86().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+                            }
+                            else
+                            {
+                                winsdk = components.AllWindowsSdkX86().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
+                            }
                         }
                     }
                     break;
@@ -252,7 +278,19 @@ namespace LuaInstaller.Console
                         }
                         else
                         {
-                            vs = components.AllVisualStudioX64().FirstOrDefault(v => v.Version.ToString() == vsVer);
+                            Match vsVerMatch = majorMinorRgx.Match(vsVer);
+                            if (vsVerMatch.Success)
+                            {
+                                GroupCollection groups = vsVerMatch.Groups;
+                                int major = int.Parse(groups[1].Value);
+                                int minor = int.Parse(groups[2].Value);
+                                
+                                vs = components.AllVisualStudioX64().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+                            }
+                            else
+                            {
+                                vs = components.AllVisualStudioX64().FirstOrDefault(v => v.Version.ToString() == vsVer);
+                            }
                         }
 
                         if (winsdkVer == null)
@@ -261,7 +299,19 @@ namespace LuaInstaller.Console
                         }
                         else
                         {
-                            winsdk = components.AllWindowsSdkX64().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
+                            Match winSdkMatch = majorMinorRgx.Match(winsdkVer);
+                            if (winSdkMatch.Success)
+                            {
+                                GroupCollection groups = winSdkMatch.Groups;
+                                int major = int.Parse(groups[1].Value);
+                                int minor = int.Parse(groups[2].Value);
+
+                                winsdk = components.AllWindowsSdkX64().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+                            }
+                            else
+                            {
+                                winsdk = components.AllWindowsSdkX64().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
+                            }
                         }
                     }
                     break;

@@ -6,42 +6,24 @@ namespace LuaInstaller.Core
     {
         private readonly int _major;
         private readonly int _minor;
+        private readonly int? _build;
+        private readonly int? _revision;
         private readonly string _installationDir;
         private readonly string _productVersion;
 
-        public string InstallationDir
-        {
-            get
-            {
-                return _installationDir;
-            }
-        }
+        public int Major { get { return _major; } }
 
-        public int Major
-        {
-            get
-            {
-                return _major;
-            }
-        }
+        public int Minor { get { return _minor; } }
 
-        public int Minor
-        {
-            get
-            {
-                return _minor;
-            }
-        }
+        public int? Build { get { return _build; } }
 
-        public string ProductVersion
-        {
-            get
-            {
-                return _productVersion;
-            }
-        }
+        public int? Revision { get { return _revision; } }
 
-        public WindowsSdkVersion(int major, int minor, string installationDir, string productVersion)
+        public string InstallationDir { get { return _installationDir; } }
+
+        public string ProductVersion { get { return _productVersion; } }
+
+        public WindowsSdkVersion(int major, int minor, string installationDir, string productVersion, int? build = null, int? revision = null)
         {
             if (major < 0)
             {
@@ -63,10 +45,22 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("productVersion");
             }
 
+            if (build != null && build.HasValue && build.Value < 0)
+            {
+                throw new ArgumentException("Integer number greater than or equal to zero expected.", "build");
+            }
+
+            if (revision != null && revision.HasValue && revision.Value < 0)
+            {
+                throw new ArgumentException("Integer number greater than or equal to zero expected.", "revision");
+            }
+
             _major = major;
             _minor = minor;
             _installationDir = installationDir;
             _productVersion = productVersion;
+            _build = build;
+            _revision = revision;
         }
 
         // override object.Equals
@@ -84,7 +78,7 @@ namespace LuaInstaller.Core
             if (!(obj == null || GetType() != obj.GetType()))
             {
                 WindowsSdkVersion other = (WindowsSdkVersion)obj;
-                result = _minor == other._minor && _major == other._major && _installationDir == other._installationDir && _productVersion == other._productVersion;
+                result = _minor == other._minor && _major == other._major && _installationDir == other._installationDir && _productVersion == other._productVersion && _build == other._build && _revision == other._revision;
             }
 
             return result;
@@ -98,12 +92,25 @@ namespace LuaInstaller.Core
 
         public override string ToString()
         {
-            return string.Format("{0}.{1}", _major, _minor);
+            return _build != null && _build.HasValue && _revision != null && _revision.HasValue ? string.Format("{0}.{1} ({0}.{1}.{2}.{3})", _major, _minor, _build.Value, _revision.Value) : string.Format("{0}.{1} ({2})", _major, _minor, (_major == 8 ? (_minor == 0 ? "win8" : ((_minor == 1) ? "winv6.3" : _productVersion)) : _productVersion));
         }
 
         public int CompareTo(WindowsSdkVersion other)
         {
-            return other.GetHashCode() - GetHashCode();
+            int[] versionDigits = new int[4] { _major, _minor, _build == null ? 0 : _build.Value, _revision == null ? 0 : _revision.Value };
+            int[] otherVersionDigits = new int[4] { other._major, other._minor, other._build == null ? 0 : other._build.Value, other._revision == null ? 0 : other._revision.Value };
+
+            int result = 0;
+            int i = 0;
+            int len = versionDigits.Length;
+
+            while (result == 0 && i < len)
+            {
+                result = otherVersionDigits[i] - versionDigits[i];
+                i++;
+            }
+            
+            return result;
         }
     }
 }

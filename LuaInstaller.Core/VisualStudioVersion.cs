@@ -93,12 +93,25 @@ namespace LuaInstaller.Core
 
         public override string ToString()
         {
-            return _build != null && _build.HasValue && _revision != null && _revision.HasValue ? string.Format("{0}.{1}.{2}.{3}", _major, _minor, _build.Value, _revision.Value) : string.Format("{0}.{1}", _major, _minor);
+            return _build != null && _build.HasValue && _revision != null && _revision.HasValue ? string.Format("{0}.{1} ({0}.{1}.{2}.{3})", _major, _minor, _build.Value, _revision.Value) : string.Format("{0}.{1}", _major, _minor);
         }
 
         public int CompareTo(VisualStudioVersion other)
         {
-            return other.GetHashCode() - GetHashCode();
+            int[] versionDigits = new int[4] { _major, _minor, _build == null ? 0 : _build.Value, _revision == null ? 0 : _revision.Value };
+            int[] otherVersionDigits = new int[4] { other._major, other._minor, other._build == null ? 0 : other._build.Value, other._revision == null ? 0 : other._revision.Value };
+
+            int result = 0;
+            int i = 0;
+            int len = versionDigits.Length;
+
+            while (result == 0 && i < len)
+            {
+                result = otherVersionDigits[i] - versionDigits[i];
+                i++;
+            }
+            
+            return result;
         }
     }
 }

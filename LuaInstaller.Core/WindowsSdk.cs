@@ -2,7 +2,7 @@
 
 namespace LuaInstaller.Core
 {
-    public class WindowsSdk
+    public class WindowsSdk : IComparable<WindowsSdk>
     {
         private readonly WindowsSdkVersion version;
         private readonly Architecture arch;
@@ -36,5 +36,10 @@ namespace LuaInstaller.Core
         public WindowsSdkVersion Version { get { return version; } }
         public IncludeDirectories IncludeDirectories { get { return includeDirectories; } }
         public LibPathDirectories LibPathDirectories { get { return libDirectories; } }
+
+        public int CompareTo(WindowsSdk other)
+        {
+            return version.CompareTo(other.version);
+        }
     }
 }

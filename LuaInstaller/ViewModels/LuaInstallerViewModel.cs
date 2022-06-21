@@ -291,7 +291,7 @@ namespace LuaInstaller.ViewModels
                 selectedLuaVersion = luaVersions[0];
             }
 
-            platform = Architecture.X86;
+            platform = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
 
             visualStudioVersions = new ObservableCollection<VisualStudio>(
                 components.AllVisualStudioX86().ToArray()

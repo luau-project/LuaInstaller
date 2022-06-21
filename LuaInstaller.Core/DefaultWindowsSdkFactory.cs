@@ -1,11 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
     public class DefaultWindowsSdkFactory : IWindowsSdkFactory
     {
+        private static readonly Regex _productVersionRgx;
+
+        static DefaultWindowsSdkFactory()
+        {
+            _productVersionRgx = new Regex(@"^(\d+)\.(\d+)\.(\d+)$");
+        }
+        
         public WindowsSdk Create(WindowsSdkVersion version, Architecture arch)
         {
             if (version == null)
@@ -13,72 +21,64 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("version");
             }
 
-            WindowsSdk sdk = null;
+            WindowsSdk windowsSdk = null;
 
             if (arch == Architecture.X86 || arch == Architecture.X64)
             {
-                string includeDir = Path.Combine(version.InstallationDir, "include");
-                string libDir = Path.Combine(version.InstallationDir, "lib");
+                string productDir = null;
 
-                string includeProdVersionDir = Path.Combine(includeDir, version.ProductVersion);
-                string libProdVersionDir = Path.Combine(libDir, version.ProductVersion);
-
-                DirectoryInfo includeInfo = null;
-                DirectoryInfo libInfo = null;
-
-                if (Directory.Exists(includeProdVersionDir) &&
-                    Directory.Exists(libProdVersionDir))
+                if (version.Major >= 10)
                 {
-                    includeInfo = new DirectoryInfo(includeProdVersionDir);
-                    libInfo = new DirectoryInfo(libProdVersionDir);
-                }
-                else
-                {
-                    includeInfo = (
-                        from versionDir in Directory.EnumerateDirectories(includeDir)
-                        where Path.GetFileName(versionDir).StartsWith(version.ProductVersion)
-                        select new DirectoryInfo(versionDir)
-                    ).FirstOrDefault();
-
-                    libInfo = (
-                        from versionDir in Directory.EnumerateDirectories(libDir)
-                        where Path.GetFileName(versionDir).StartsWith(version.ProductVersion)
-                        select new DirectoryInfo(versionDir)
-                    ).FirstOrDefault();
-
-                    if (includeInfo == null || libInfo == null)
+                    Match match = _productVersionRgx.Match(version.ProductVersion);
+                    if (match.Success)
                     {
-                        includeInfo = new DirectoryInfo(includeDir);
-                        libInfo = new DirectoryInfo(libDir).EnumerateDirectories().LastOrDefault();
+                        productDir = version.ProductVersion + ".0";
+                    }
+                    else
+                    {
+                        productDir = version.ProductVersion;
+                    }
+                }
+                else if (version.Major == 8)
+                {
+                    if (version.Minor == 1)
+                    {
+                        productDir = "winv6.3";
+                    }
+                    else if (version.Minor == 0)
+                    {
+                        productDir = "win8";
                     }
                 }
 
-                if (includeInfo != null && libInfo != null)
+                if (productDir != null)
                 {
-                    IncludeDirectories includeDirectories = new IncludeDirectories(
-                        (
-                            from dirInfo in includeInfo.EnumerateDirectories()
-                            select dirInfo.FullName
-                        ).ToArray()
-                    );
+                    string includeProductDir = version.Major >= 10 ?  Path.Combine(version.InstallationDir, "Include", productDir) : Path.Combine(version.InstallationDir, "Include");
+                    string libProductDir = Path.Combine(version.InstallationDir, "Lib", productDir);
 
-                    LibPathDirectories libDirectories = new LibPathDirectories(
-                        (
-                            from dirInfo in libInfo.EnumerateDirectories()
-                            let path = Path.Combine(dirInfo.FullName, arch.ToString())
-                            where Directory.Exists(path)
-                            select path
-                        ).ToArray()
-                    );
-
-                    if (includeDirectories.Length > 0 && libDirectories.Length > 0)
+                    if (Directory.Exists(includeProductDir) && Directory.Exists(libProductDir))
                     {
-                        sdk = new WindowsSdk(version, arch, includeDirectories, libDirectories);
+                        IncludeDirectories includeDirectories = new IncludeDirectories(
+                            Directory.EnumerateDirectories(includeProductDir).ToArray()
+                        );
+
+                        string archStr = arch.ToString();
+
+                        LibPathDirectories libPathDirectories = new LibPathDirectories(
+                            (
+                                from dir in Directory.EnumerateDirectories(libProductDir)
+                                let path = Path.Combine(dir, archStr)
+                                where Directory.Exists(path)
+                                select path
+                            ).ToArray()
+                        );
+                        
+                        windowsSdk = new WindowsSdk(version, arch, includeDirectories, libPathDirectories);
                     }
                 }
             }
 
-            return sdk;
+            return windowsSdk;
         }
     }
 }

@@ -1,21 +1,20 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
-    public static class WindowsSdkRegQuery
+    public class WindowsSdkVerionsFromRegQuery : IWindowsSdkVersionLocator
     {
         private static readonly Regex _rgx;
 
-        static WindowsSdkRegQuery()
+        static WindowsSdkVerionsFromRegQuery()
         {
-            _rgx = new Regex(@"[vV](\d+)\.(\d+)$");
+            _rgx = new Regex(@"^[vV](\d+)\.(\d+)$");
         }
 
-        private static WindowsSdkVersion[] GetVersionsCore(string initialReg)
+        private WindowsSdkVersion[] GetVersionsCore(string initialReg)
         {
             SortedSet<WindowsSdkVersion> values = new SortedSet<WindowsSdkVersion>();
 
@@ -41,7 +40,7 @@ namespace LuaInstaller.Core
                                     string installationFolder = (string)(sdkReg.GetValue("InstallationFolder"));
                                     string productVersion = (string)(sdkReg.GetValue("ProductVersion"));
 
-                                    if (installationFolder != null && Directory.Exists(installationFolder) && productVersion != null)
+                                    if (installationFolder != null && productVersion != null)
                                     {
                                         int major = int.Parse(match.Groups[1].Value);
                                         int minor = int.Parse(match.Groups[2].Value);
@@ -60,7 +59,7 @@ namespace LuaInstaller.Core
             return result;
         }
 
-        public static WindowsSdkVersion[] GetVersions()
+        public WindowsSdkVersion[] GetVersions()
         {
             return GetVersionsCore(Environment.Is64BitOperatingSystem ?
                 @"SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows" :

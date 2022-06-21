@@ -70,31 +70,39 @@ namespace LuaInstaller.Core
 		{
 			ICollection<VisualStudioVersion> versions = new List<VisualStudioVersion>();
 
-			SetupConfiguration query = new SetupConfiguration();
-
-			IEnumSetupInstances e = query.EnumAllInstances();
-			int fetched;
-
-			do
+			try
 			{
-				fetched = 0;
-				ISetupInstance[] instances = new ISetupInstance[1];
+				SetupConfiguration query = new SetupConfiguration();
 
-				e.Next(1, instances, out fetched);
-				if (fetched != 0)
+				IEnumSetupInstances e = query.EnumAllInstances();
+				int fetched;
+
+				do
 				{
-					VisualStudioVersion instanceVersion = ProcessSetupInstance((ISetupInstance2)instances[0]);
+					fetched = 0;
+					ISetupInstance[] instances = new ISetupInstance[1];
 
-					if (instanceVersion != null)
+					e.Next(1, instances, out fetched);
+					if (fetched != 0)
 					{
-						versions.Add(instanceVersion);
+						VisualStudioVersion instanceVersion = ProcessSetupInstance((ISetupInstance2)instances[0]);
+
+						if (instanceVersion != null)
+						{
+							versions.Add(instanceVersion);
+						}
 					}
 				}
+				while (fetched != 0);
 			}
-			while (fetched != 0);
+			catch
+			{
+
+			}
 
 			VisualStudioVersion[] result = new VisualStudioVersion[versions.Count];
 			versions.CopyTo(result, 0);
+
 			return result;
 		}
 	}

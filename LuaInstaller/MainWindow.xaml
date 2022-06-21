@@ -88,12 +88,12 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 			
-			<!--<CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}"/>
+			<CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}"/>
 
             <StackPanel IsEnabled="{Binding SetEnvironmentVariables}" Grid.Column="1" Grid.Row="12" Orientation="Horizontal">
                 <RadioButton Margin="20,0,10,0" Content="User" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=User}"/>
                 <RadioButton Content="Machine" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=Machine}"/>
-            </StackPanel>-->
+            </StackPanel>
 			
         </Grid>
         

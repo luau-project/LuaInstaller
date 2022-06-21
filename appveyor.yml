@@ -1,10 +1,14 @@
 version: 1.0.{build}
-configuration: Release
-platform: Any CPU
+image:
+  - Visual Studio 2022
+plataform:
+  - x86
+  - x64
 before_build:
-- cmd: nuget restore LuaInstaller.sln
+- cmd: dotnet restore LuaInstaller.sln
 build:
-  project: LuaInstaller.sln
-  verbosity: minimal
+  - cmd: dotnet build .\LuaInstaller\LuaInstaller.csproj -c Release -r win-%plataform% --self-contained true
+  - cmd: dotnet build .\LuaInstaller.Console\LuaInstaller.Console.csproj -c Release -r win-%plataform% --self-contained true
 on_success:
-- ps: .\appveyor.ps1
+  - cmd: .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe /?
+  - cmd: .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe install

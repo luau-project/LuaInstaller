@@ -24,7 +24,7 @@ LuaInstaller.Console.exe list-lua
     Lists all Lua versions that this tool
     is able to build
 
-LuaInstaller.Console.exe [ list-vs | list-vs-x86 ]
+LuaInstaller.Console.exe list-vs-x86
     Lists all MSVC x86 toolset
     compilers found
 
@@ -53,7 +53,8 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
     arch=[ x86 | X86 | x64 | X64 ]
         Generates machine code for the
         specified platform
-        Defaults to x86
+        Defaults to x64 on 64 Bit Operating
+        Systems or x86 otherwise.
 
     vs=14.0
         Uses a specific version of the
@@ -80,7 +81,7 @@ Examples
 1) Installs the latest Lua available on Lua's website
 in the current directory, using the latest versions
 of Visual Studio and Windows SDK, building the source
-code for x86 platforms
+code for x64 on 64 Bit Operating Systems or x86 otherwise.
 
     LuaInstaller.Console.exe install
 
@@ -94,12 +95,13 @@ platforms
 3) Installs Lua 5.1.5 in the folder
 'C:\Program Files (x86)\Lua',
 using the latest versions of Visual Studio and
-Windows SDK, building the source code for x86
-platforms and sets environment variables machine-wide
+Windows SDK, building the source code for x64
+on 64 Bit Operating Systems or x86 otherwise.
+Also sets environment variables machine-wide
 
 ------------------------------------------------------
 Remark: This kind of machine-wide installation usually
-requires 'Administrator' privileges, so you should
+requires 'Administrator' privileges, so you must
 'Run As Administrator'
 ------------------------------------------------------
 
@@ -141,6 +143,7 @@ requires 'Administrator' privileges, so you should
         {
             int result = 0;
             int nargs = args.Length;
+            bool installed = false;
 
             if (nargs == 0)
             {
@@ -201,6 +204,7 @@ requires 'Administrator' privileges, so you should
                     case "install":
                         {
                             result = Install(args);
+                            installed = result == 0;
                             break;
                         }
                     default:
@@ -220,6 +224,7 @@ requires 'Administrator' privileges, so you should
                     case "install":
                         {
                             result = Install(args);
+                            installed = result == 0;
                             break;
                         }
                     default:
@@ -229,6 +234,11 @@ requires 'Administrator' privileges, so you should
                         }
                         break;
                 }
+            }
+            
+            if (installed)
+            {
+                Write("Lua was installed successfully.");
             }
 
             return result;

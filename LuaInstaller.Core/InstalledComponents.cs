@@ -9,8 +9,14 @@ namespace LuaInstaller.Core
         private readonly IVisualStudioFactory _vsFactory;
         private readonly IWindowsSdkFactory _winsdkFactory;
         private readonly IVisualStudioVersionLocator[] _visualStudioVersionLocators;
+        private readonly IWindowsSdkVersionLocator[] _windowsSdkVersionLocators;
         
-        public InstalledComponents(IVisualStudioFactory vsFactory, IWindowsSdkFactory winsdkFactory, IVisualStudioVersionLocator[] visualStudioVersionLocators)
+        public InstalledComponents(
+            IVisualStudioFactory vsFactory,
+            IWindowsSdkFactory winsdkFactory,
+            IVisualStudioVersionLocator[] visualStudioVersionLocators,
+            IWindowsSdkVersionLocator[] windowsSdkVersionLocators
+            )
 		{
 			if (vsFactory == null)
 			{
@@ -27,12 +33,19 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("visualStudioVersionLocators");
             }
 
+            if (windowsSdkVersionLocators == null)
+            {
+                throw new ArgumentNullException("windowsSdkVersionLocators");
+            }
+
 			_vsFactory = vsFactory;
 			_winsdkFactory = winsdkFactory;
 
-            int len = visualStudioVersionLocators.Length;
-			_visualStudioVersionLocators = new IVisualStudioVersionLocator[len];
+			_visualStudioVersionLocators = new IVisualStudioVersionLocator[visualStudioVersionLocators.Length];
             visualStudioVersionLocators.CopyTo(_visualStudioVersionLocators, 0);
+
+            _windowsSdkVersionLocators = new IWindowsSdkVersionLocator[windowsSdkVersionLocators.Length];
+            windowsSdkVersionLocators.CopyTo(_windowsSdkVersionLocators, 0);
 		}
 
 		public InstalledComponents()
@@ -42,6 +55,10 @@ namespace LuaInstaller.Core
                   new IVisualStudioVersionLocator[2] {
                       new VisualStudioVersionsFromRegQuery(),
                       new VisualStudioVersionsFromSetupApi()
+                  },
+                  new IWindowsSdkVersionLocator[2] {
+                      new WindowsSdkVerionsFromRegQuery(),
+                      new WindowsSdkVerionsFromVisualStudioInstall()
                   })
         {
 
@@ -59,6 +76,8 @@ namespace LuaInstaller.Core
         
         private IEnumerable<VisualStudio> AllVisualStudioCore(Architecture arch)
         {
+            List<VisualStudio> visualStudios = new List<VisualStudio>();
+
             foreach (IVisualStudioVersionLocator locator in _visualStudioVersionLocators)
             {
                 foreach (VisualStudioVersion version in locator.GetVersions())
@@ -67,14 +86,14 @@ namespace LuaInstaller.Core
 
                     if (visualStudio != null)
                     {
-                        yield return visualStudio;
+                        visualStudios.Add(visualStudio);
                     }
                 }
             }
-            //return from vsVer in VisualStudioVersionsFromRegQuery.GetVersions()
-            //       let visualStudio = _vsFactory.Create(vsVer, arch)
-            //       where visualStudio != null
-            //       select visualStudio;
+            
+            visualStudios.Sort();
+
+            return visualStudios;
         }
 
         public IEnumerable<WindowsSdk> AllWindowsSdkX64()
@@ -89,19 +108,24 @@ namespace LuaInstaller.Core
 
         private IEnumerable<WindowsSdk> AllWindowsSdkCore(Architecture arch)
 		{
-            foreach (WindowsSdkVersion windowsSdkVersion in WindowsSdkRegQuery.GetVersions())
+            List<WindowsSdk> windowsSdks = new List<WindowsSdk>();
+            
+            foreach (IWindowsSdkVersionLocator locator in _windowsSdkVersionLocators)
             {
-                WindowsSdk windowsSdk = _winsdkFactory.Create(windowsSdkVersion, arch);
-
-                if (windowsSdk != null)
+                foreach (WindowsSdkVersion version in locator.GetVersions())
                 {
-                    yield return windowsSdk;
+                    WindowsSdk windowsSdk = _winsdkFactory.Create(version, arch);
+
+                    if (windowsSdk != null)
+                    {
+                        windowsSdks.Add(windowsSdk);
+                    }
                 }
             }
-			//return from winsdkVer in WindowsSdkRegQuery.GetVersions()
-			//       let winsdk = _winsdkFactory.Create(winsdkVer, arch)
-			//       where winsdk != null
-			//       select winsdk;
+
+            windowsSdks.Sort();
+
+            return windowsSdks;
 		}
 	}
 }

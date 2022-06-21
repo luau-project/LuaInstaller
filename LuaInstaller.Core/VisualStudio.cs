@@ -2,7 +2,7 @@
 
 namespace LuaInstaller.Core
 {
-    public class VisualStudio
+    public class VisualStudio : IComparable<VisualStudio>
     {
         private readonly VisualStudioVersion version;
         private readonly VisualStudioToolset toolset;
@@ -44,5 +44,10 @@ namespace LuaInstaller.Core
         public VisualStudioVersion Version { get { return version; } }
         public IncludeDirectories IncludeDirectories { get { return includeDirs; } }
         public LibPathDirectories LibPathDirectories { get { return libDirs; } }
+
+        public int CompareTo(VisualStudio other)
+        {
+            return version.CompareTo(other.version);
+        }
     }
 }
