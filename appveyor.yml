@@ -5,10 +5,10 @@ plataform:
   - x86
   - x64
 before_build:
-- cmd: dotnet restore LuaInstaller.sln
+- dotnet restore LuaInstaller.sln
 build_script:
-  - cmd: dotnet build .\LuaInstaller\LuaInstaller.csproj -c Release -r win-%plataform% --self-contained true
-  - cmd: dotnet build .\LuaInstaller.Console\LuaInstaller.Console.csproj -c Release -r win-%plataform% --self-contained true
+  - dotnet build .\LuaInstaller\LuaInstaller.csproj -c Release -r win-%plataform% --self-contained true
+  - dotnet build .\LuaInstaller.Console\LuaInstaller.Console.csproj -c Release -r win-%plataform% --self-contained true
 on_success:
-  - cmd: .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe /?
-  - cmd: .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe install
+  - .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe /?
+  - .\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-%plataform%\LuaInstaller.Console.exe install
