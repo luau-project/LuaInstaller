@@ -1,4 +1,7 @@
 $dotnet_dir = Join-Path -Path (Get-Location) -ChildPath "dotnet_dir";
+
+New-Item $dotnet_dir -ItemType Directory;
+
 $dotnet_install_file = Join-Path -Path $dotnet_dir -ChildPath "dotnet-install.ps1";
 $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
 
@@ -8,13 +11,19 @@ Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing 
 $archs = 'x64', 'x86';
 
 foreach ($arch in $archs) {
-    Remove-Item .\LuaInstaller.Console\bin, .\LuaInstaller.Console\obj, .\LuaInstaller\bin, .\LuaInstaller\obj -Recurse;
+    $directories_to_clean = ".\LuaInstaller.Console\bin", ".\LuaInstaller.Console\obj", ".\LuaInstaller\bin", ".\LuaInstaller\obj";
+
+    foreach ($dir_to_clean in $directories_to_clean) {
+        if (Test-Path $dir_to_clean) {
+            Remove-Item $dir_to_clean -Recurse;
+        }
+    }
     
     & $dotnet_runner restore LuaInstaller.sln;
     & $dotnet_runner build .\LuaInstaller.Console\LuaInstaller.Console.csproj -c Release -r win-$arch --self-contained true;
     & $dotnet_runner build .\LuaInstaller\LuaInstaller.csproj -c Release -r win-$arch --self-contained true;
 
-    $console = ".\LuaInstaller.Console\bin\Release\netcoreapp3.0\win-$arch\LuaInstaller.Console.exe";
+    $console = ".\LuaInstaller.Console\bin\Any CPU\Release\netcoreapp3.0\win-$arch\LuaInstaller.Console.exe";
 
     $commands = "/?", "list-win-sdk", "list-vs-$arch", "list-lua";
 

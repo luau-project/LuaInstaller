@@ -29,7 +29,7 @@ namespace LuaInstaller.Core
 				ISetupPackageReference packageReference = packageReferences[i];
 				string id = packageReference.GetId();
 
-				if (id.Equals("Microsoft.VisualCpp.Tools.Common.Utils", StringComparison.InvariantCultureIgnoreCase))
+				if (id.Equals("Microsoft.VisualCpp.DIA.SDK", StringComparison.InvariantCultureIgnoreCase))
 				{
 					Match match = _rgx.Match(setupInstance.GetInstallationVersion());
 
