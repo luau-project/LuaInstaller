@@ -23,7 +23,7 @@ foreach ($arch in $archs) {
     & $dotnet_runner build .\LuaInstaller.Console\LuaInstaller.Console.csproj -c Release -r win-$arch --self-contained true;
     & $dotnet_runner build .\LuaInstaller\LuaInstaller.csproj -c Release -r win-$arch --self-contained true;
 
-    $console = ".\LuaInstaller.Console\bin\Any CPU\Release\netcoreapp3.0\win-$arch\LuaInstaller.Console.exe";
+    $console = ".\LuaInstaller.Console\bin\Any CPU\Release\net6.0-windows\win-$arch\LuaInstaller.Console.exe";
 
     $commands = "/?", "list-win-sdk", "list-vs-$arch", "list-lua";
 
@@ -34,7 +34,7 @@ foreach ($arch in $archs) {
         Write-Host;
     }
 
-    $lua_versions = "5.1.5", "5.2.4", "5.3.6", "5.4.4";
+    $lua_versions = "5.1.5", "5.2.4", "5.3.6", "5.4.6";
 
     $current_dir = Get-Location;
 
