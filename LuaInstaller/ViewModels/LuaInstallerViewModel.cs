@@ -294,7 +294,7 @@ namespace LuaInstaller.ViewModels
             platform = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
 
             visualStudioVersions = new ObservableCollection<VisualStudio>(
-                components.AllVisualStudioX86().ToArray()
+                (platform == Architecture.X86 ? components.AllVisualStudioX86() : components.AllVisualStudioX64()).ToArray()
             );
 
             if (visualStudioVersions.Count > 0)
@@ -303,7 +303,7 @@ namespace LuaInstaller.ViewModels
             }
 
             winSdkVersions = new ObservableCollection<WindowsSdk>(
-                components.AllWindowsSdkX86().ToArray()
+                (platform == Architecture.X86 ? components.AllWindowsSdkX86() : components.AllWindowsSdkX64()).ToArray()
             );
 
 

@@ -4,13 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
     public static class LuaWebsite
     {
-        private const string LUA_DOWNLOAD_URL = "http://www.lua.org/ftp";
+        private const string LUA_DOWNLOAD_URL = "https://www.lua.org/ftp";
+
+        static LuaWebsite()
+        {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(AcceptExpiredCerts);
+        }
 
         public static LuaVersion[] QueryVersions()
         {
@@ -55,6 +62,11 @@ namespace LuaInstaller.Core
             LuaVersion[] array = new LuaVersion[result.Count];
             result.CopyTo(array);
             return array;
+        }
+
+        private static bool AcceptExpiredCerts(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
         }
 
         public static LuaVersion GetLatestVersion()

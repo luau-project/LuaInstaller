@@ -11,7 +11,7 @@ namespace LuaInstaller.Core
 		private static readonly Regex _rgx;
 
 		static VisualStudioVersionsFromSetupApi()
-		{
+        {
 			_rgx = new Regex(@"^(\d+)\.(\d+)\.(\d+)\.(\d+)$");
 		}
 
@@ -29,33 +29,44 @@ namespace LuaInstaller.Core
 				ISetupPackageReference packageReference = packageReferences[i];
 				string id = packageReference.GetId();
 
-				if (id.Equals("Microsoft.VisualCpp.DIA.SDK", StringComparison.InvariantCultureIgnoreCase))
+				if (id.Equals("Microsoft.VisualStudio.Component.VC.Tools.x86.x64", StringComparison.InvariantCultureIgnoreCase))
 				{
-					Match match = _rgx.Match(setupInstance.GetInstallationVersion());
-
-					if (match.Success)
+					string vsDir = setupInstance.GetInstallationPath();
+					
+					if (vsDir != null)
 					{
-						GroupCollection groups = match.Groups;
+						string vcToolsVersionDefaultFile = Path.Combine(vsDir, "VC", "Auxiliary", "Build", "Microsoft.VCToolsVersion.default.txt");
 
-						int major = int.Parse(groups[1].Value);
-						int minor = int.Parse(groups[2].Value);
-						int build = int.Parse(groups[3].Value);
-						int revision = int.Parse(groups[4].Value);
+						if (File.Exists(vcToolsVersionDefaultFile))
+                        {
+							string vcVersion = File.ReadAllText(vcToolsVersionDefaultFile).Trim();
 
-						string vsDir = setupInstance.GetInstallationPath();
-						string vcDir = Path.Combine(vsDir, "VC", "Tools", "MSVC", packageReference.GetVersion());
+                            Match match = _rgx.Match(setupInstance.GetInstallationVersion());
 
-						result = new VisualStudioVersion(
-							major,
-							minor,
-							vsDir,
-							vcDir,
-							build,
-							revision
-						);
+                            if (match.Success)
+                            {
+                                GroupCollection groups = match.Groups;
+
+                                int major = int.Parse(groups[1].Value);
+                                int minor = int.Parse(groups[2].Value);
+                                int build = int.Parse(groups[3].Value);
+								int revision = int.Parse(groups[4].Value);
+
+								string vcDir = Path.Combine(vsDir, "VC", "Tools", "MSVC", vcVersion);
+
+                                result = new VisualStudioVersion(
+                                    major,
+                                    minor,
+                                    vsDir,
+                                    vcDir,
+                                    build,
+									revision
+								);
+                            }
+
+                            i = len;
+                        }
 					}
-
-					i = len;
 				}
 				else
 				{
