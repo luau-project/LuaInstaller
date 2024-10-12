@@ -10,6 +10,8 @@
         LinkInterpreter,
         CompileCompiler,
         LinkCompiler,
+        CreatePkgConfigFile,
+        InstallOnDestDir,
         EnvironmentVariables,
         Finished
     }

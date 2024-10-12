@@ -6,11 +6,6 @@ namespace LuaInstaller.Core
 {
     public sealed class InstallationManager
     {
-        private const string LUA_DLL_NAME_FORMAT = "lua{0}.dll";
-        private const string LUA_LIB_NAME_FORMAT = "lua{0}.lib";
-        private const string LUA_INTERPRETER_NAME = "lua.exe";
-        private const string LUA_COMPILER_NAME = "luac.exe";
-
         private readonly ICompiler _compiler;
         private readonly ILinker _linker;
         
@@ -320,6 +315,65 @@ namespace LuaInstaller.Core
             }
         }
 
+        private void InstallOnDestDirCore(string workDir, string destDir)
+        {
+            Directory.CreateDirectory(destDir);
+
+            foreach (string entry in Directory.GetFileSystemEntries(workDir))
+            {
+                FileSystemInfo info = new FileInfo(entry);
+                string entryName = Path.GetFileName(entry);
+                string expectedDestSubentry = Path.Combine(destDir, entryName);
+                
+                if (info.Attributes.HasFlag(FileAttributes.Directory))
+                {
+                    if (File.Exists(expectedDestSubentry))
+                    {
+                        File.Delete(expectedDestSubentry);
+                    }
+
+                    InstallOnDestDirCore(entry, expectedDestSubentry);
+                }
+                else
+                {
+                    File.Copy(entry, expectedDestSubentry, true);
+                }
+            }
+        }
+        private void InstallOnDestDir(LuaDestinationDirectory workDir, LuaDestinationDirectory destDir)
+        {
+            try
+            {
+                InstallOnDestDirCore(workDir.Path, destDir.Path);
+                OnInstallationProgressChanged(InstallationProgress.InstallOnDestDir);
+            }
+            catch (Exception ex)
+            {
+                throw new InstallOnDestDirException("Unable to install Lua on destination directory", ex);
+            }
+        }
+        
+        private void CreatePkgConfigFile(LuaDestinationDirectory destDir, LuaVersion version, LuaGeneratedBinaries generatedBinaries)
+        {
+            try
+            {
+                PkgConfigOutputInfo pkgConfigOutput = new PkgConfigOutputInfo(version, generatedBinaries, destDir);
+                
+                if (pkgConfigOutput.WritePkgConfigFile())
+                {
+                    OnInstallationProgressChanged(InstallationProgress.CreatePkgConfigFile);
+                }
+                else
+                {
+                    throw new Exception("Failed to create pkg-config file");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CreatePkgConfigFileException("Unable to create pkg-config file for Lua", ex);
+            }
+        }
+
         private void SetEnvironmentVariables(LuaDestinationDirectory destDir, EnvironmentVariableTarget? variableTarget)
         {
             if (variableTarget.HasValue)
@@ -377,42 +431,60 @@ namespace LuaInstaller.Core
                 "li-sources-" + Guid.NewGuid().ToString("N")
             );
 
+            string luaWorkDir = Path.Combine(
+                Path.GetTempPath(),
+                "li-workdir-" + Guid.NewGuid().ToString("N")
+            );
+
             try
             {
                 Directory.CreateDirectory(luaSourcesDir);
+                Directory.CreateDirectory(luaWorkDir);
 
                 LuaWebsite.DownloadAndExtract(luaSourcesDir, luaSourcesDir, version);
                 OnInstallationProgressChanged(Core.InstallationProgress.Download);
 
                 LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(Path.Combine(luaSourcesDir, version.ExtractedDirectoryName));
-                LuaDestinationDirectory destDir = new LuaDestinationDirectory(luaDestDir);
-
-                destDir.CreateFrom(sourcesDir);
+                LuaDestinationDirectory workDir = new LuaDestinationDirectory(luaWorkDir);
+                LuaGeneratedBinaries generatedBinaries = new LuaGeneratedBinaries(version);
+                
+                workDir.CreateFrom(sourcesDir);
 
                 BuildDll(
                     sourcesDir.Src,
-                    Path.Combine(destDir.Lib, string.Format(LUA_DLL_NAME_FORMAT, version.ShortVersion)),
+                    Path.Combine(workDir.Lib, generatedBinaries.DllName),
                     vs,
                     winsdk
                 );
                 BuildInterpreter(
                     sourcesDir.Src,
-                    Path.Combine(destDir.Lib, string.Format(LUA_LIB_NAME_FORMAT, version.ShortVersion)), 
-                    Path.Combine(destDir.Bin, LUA_INTERPRETER_NAME),
+                    Path.Combine(workDir.Lib, generatedBinaries.ImportLibName), 
+                    Path.Combine(workDir.Bin, generatedBinaries.InterpreterName),
                     vs,
                     winsdk
                 );
                 File.Copy(
-                    Path.Combine(destDir.Lib, string.Format(LUA_DLL_NAME_FORMAT, version.ShortVersion)),
-                    Path.Combine(destDir.Bin, string.Format(LUA_DLL_NAME_FORMAT, version.ShortVersion)),
+                    Path.Combine(workDir.Lib, generatedBinaries.DllName),
+                    Path.Combine(workDir.Bin, generatedBinaries.DllName),
                     true
                 );
                 BuildCompiler(
                     sourcesDir.Src,
-                    Path.Combine(destDir.Bin, LUA_COMPILER_NAME),
+                    Path.Combine(workDir.Bin, generatedBinaries.CompilerName),
                     vs,
                     winsdk
                 );
+
+                if (File.Exists(Path.Combine(workDir.Lib, generatedBinaries.DllName)))
+                {
+                    File.Delete(
+                        Path.Combine(workDir.Lib, generatedBinaries.DllName)
+                    );
+                }
+
+                LuaDestinationDirectory destDir = new LuaDestinationDirectory(luaDestDir);
+                InstallOnDestDir(workDir, destDir);
+                CreatePkgConfigFile(destDir, version, generatedBinaries);
                 SetEnvironmentVariables(destDir, variableTarget);
             }
             finally
@@ -420,6 +492,11 @@ namespace LuaInstaller.Core
                 if (Directory.Exists(luaSourcesDir))
                 {
                     Directory.Delete(luaSourcesDir, true);
+                }
+
+                if (Directory.Exists(luaWorkDir))
+                {
+                    Directory.Delete(luaWorkDir, true);
                 }
             }
 

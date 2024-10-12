@@ -123,6 +123,16 @@ namespace LuaInstaller.Commands
                         viewModel.Status = "luac.exe was built successfully and is ready to use";
                     }
                     break;
+                case InstallationProgress.InstallOnDestDir:
+                    {
+                        viewModel.Status = "Failed to install on destination directory";
+                    }
+                    break;
+                case InstallationProgress.CreatePkgConfigFile:
+                    {
+                        viewModel.Status = "Failed to create a pkg-config file";
+                    }
+                    break;
                 case InstallationProgress.EnvironmentVariables:
                     {
                         viewModel.Status = "Environment variables were set";
@@ -187,6 +197,16 @@ namespace LuaInstaller.Commands
                         break;
                     case InstallationProgress.LinkCompiler:
                         {
+                            viewModel.Status = "Failed to place artifacts on destination directory.";
+                        }
+                        break;
+                    case InstallationProgress.InstallOnDestDir:
+                        {
+                            viewModel.Status = "Failed to create pkg-config file on destination folder.";
+                        }
+                        break;
+                    case InstallationProgress.CreatePkgConfigFile:
+                        {
                             viewModel.Status = "Everything was installed, but environment variables were not set.";
                         }
                         break;
@@ -201,6 +221,9 @@ namespace LuaInstaller.Commands
             }
 
             IsInstalling = false;
+
+            BackgroundWorker workerThread = (BackgroundWorker)sender;
+            workerThread.Dispose();
         }
 
         private void WorkerThread_DoWork(object sender, DoWorkEventArgs e)

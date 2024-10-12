@@ -62,6 +62,14 @@ namespace LuaInstaller.Core
             }
         }
 
+        public string ShortVersionWithoutDot
+        {
+            get
+            {
+                return string.Format("{0}{1}", _major, _minor);
+            }
+        }
+
         public string Version
         {
             get
