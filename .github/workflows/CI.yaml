@@ -11,7 +11,7 @@ on:
       - "docs/**"
 
 env:
-  LuaInstaller_VERSION: 0.1.0.0
+  LuaInstaller_VERSION: 0.1.0.1
   LUAROCKS_VERSION: 3.11.1
 
 jobs:
@@ -189,7 +189,7 @@ jobs:
         run: lua "${{ env.LFS_TEST_FILE }}"
       
       - name: Prepare artifacts to upload
-        if: ${{ matrix.LUA_VERSION == '5.4.7' && (github.ref_name == 'release' && startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.LUA_VERSION == '5.4.7' && (github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/')) }}
         run: |
           mkdir release;
           $dirs_to_archive = "${{ env.CONSOLE_DIR }}", "${{ env.WPF_DIR }}";
@@ -211,7 +211,7 @@ jobs:
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.LUA_VERSION == '5.4.7' && (github.ref_name == 'release' && startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.LUA_VERSION == '5.4.7' && (github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/')) }}
         with:
           name: release-v${{ env.LuaInstaller_VERSION }}-${{ matrix.ARCH }}
           path: release
