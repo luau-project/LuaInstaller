@@ -1,0 +1,190 @@
+name: LuaFileSystem
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      lua-version:
+        required: true
+        type: string
+
+env:
+  LUAROCKS_VERSION: 3.11.1
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: Build
+
+    steps:
+      - name: Check arch input
+        run: |
+          $allowed_archs = "x86", "x64";
+          if (-not ($allowed_archs -contains "${{ inputs.arch }}"))
+          {
+            Write-Host "Arch not found";
+            exit /B 1;
+          }
+      
+      - name: Check lua-version input
+        run: |
+          if (-not ("${{ inputs.lua-version }}" -match "^(\d+)\.(\d+)(\.\d+)*$"))
+          {
+            Write-Host "Invalid Lua version (X.Y.Z) expected";
+            exit /B 1;
+          }
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: LuaInstaller
+      
+      - name: Set environment variables
+        run: |
+          $wpf_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.EndUsers;
+          $console_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.Console;
+
+          Add-Content "${{ github.env }}" "WPF_DIR=${wpf_dir}";
+          Add-Content "${{ github.env }}" "CONSOLE_DIR=${console_dir}";
+
+      - name: Setup dotnet
+        run: |
+          $dotnet_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "dotnet-dir";
+
+          New-Item $dotnet_dir -ItemType Directory;
+
+          $dotnet_install_file = Join-Path -Path $dotnet_dir -ChildPath "dotnet-install.ps1";
+          $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
+
+          Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
+          & $dotnet_install_file -Architecture "${{ inputs.arch }}" -Version "6.0.427" -InstallDir $dotnet_dir;
+
+          Add-Content "${{ github.env }}" "DOTNET_RUNNER=${dotnet_runner}";
+
+      - name: Restore the solution
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            restore LuaInstaller\LuaInstaller.sln
+
+      - name: Build LuaInstaller.Console
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            publish LuaInstaller\LuaInstaller.Console\LuaInstaller.Console.csproj `
+            -o "${{ env.CONSOLE_DIR }}" `
+            -c Release `
+            -r win-${{ inputs.arch }} `
+            --self-contained true
+
+      - name: Build LuaInstaller
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            publish LuaInstaller\LuaInstaller\LuaInstaller.csproj `
+            -o "${{ env.WPF_DIR }}" `
+            -c Release `
+            -r win-${{ inputs.arch }} `
+            --self-contained true
+
+      - name: Setup Lua and LuaRocks environment variables
+        run: |
+          $lua_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "Lua";
+          $luarocks_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "luarocks-${{ inputs.lua-version }}-windows-64";
+          $lfs_test_file = Join-Path -Path "${{ runner.temp }}" -ChildPath "lfs-test.lua";
+
+          Add-Content "${{ github.env }}" "LUA_DIR=${lua_dir}";
+          Add-Content "${{ github.env }}" "LUAROCKS_DIR=${luarocks_dir}";
+          Add-Content "${{ github.env }}" "LFS_TEST_FILE=${lfs_test_file}";
+      
+      - name: Test LuaInstaller.Console installing Lua ${{ inputs.lua-version }}
+        run: |
+          $console = Join-Path "${{ env.CONSOLE_DIR }}" -ChildPath "LuaInstaller.Console.exe";
+          
+          $commands = "/?", "list-win-sdk", "list-vs-${{ inputs.arch }}", "list-lua";
+          $color = (0x1b -as [char]) + "[35m";
+
+          foreach ($c in $commands) {
+            Write-Host;
+            Write-Host "command: ${color}${c}";
+            Write-Host;
+            & $console $c;
+            Write-Host;
+          }
+          
+          & $console install `
+            "dest-dir=${{ env.LUA_DIR }}" `
+            arch=${{ inputs.arch }} `
+            "version=${{ inputs.lua-version }}";
+          
+          $luaBinDir = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
+          $luaExe = Join-Path -Path $luaBinDir -ChildPath "lua.exe";
+
+          & $luaExe -v
+
+      - name: Download LuaRocks
+        run: Invoke-WebRequest -Uri https://luarocks.org/releases/luarocks-${{ inputs.lua-version }}-windows-64.zip -OutFile luarocks-${{ inputs.lua-version }}-windows-64.zip
+      
+      - name: Extract LuaRocks
+        run: Expand-Archive luarocks-${{ inputs.lua-version }}-windows-64.zip -DestinationPath ([System.IO.Path]::GetDirectoryName("${{ env.LUAROCKS_DIR }}"))
+      
+      - name: Add Lua and LuaRocks to system PATH environment variable
+        run: |
+          $luaBinDir = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
+
+          Add-Content "${{ github.path }}" "$luaBinDir";
+          Add-Content "${{ github.path }}" "${{ env.LUAROCKS_DIR }}";
+      
+      - name: Setup MSVC dev-prompt for LuaRocks configuration
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ inputs.arch }}
+      
+      - name: Configure LuaRocks for Lua ${{ inputs.lua-version }}
+        run: |
+          luarocks config lua_dir "${{ env.LUA_DIR }}"
+          
+          $lua_short_version = "${{ inputs.lua-version }}" -split "\." |
+            Select-Object -First 2 |
+            Join-String -Separator ".";
+          
+          luarocks config lua_version $lua_short_version;
+      
+      - name: Update environment variables with variables from LuaRocks
+        run: |
+          $luarocks_path = luarocks.exe path
+          Add-Content "${{ github.env }}" $luarocks_path.Replace("""", "").Replace("'", "").Replace("SET ", "")
+      
+      - name: Install LuaFileSystem
+        run: luarocks install luafilesystem
+      
+      # https://lunarmodules.github.io/luafilesystem/examples.html
+      - name: Create a Test file for LuaFileSystem
+        run: |
+          $test_script = @'
+          local lfs = require"lfs"
+
+          function attrdir (path)
+              for file in lfs.dir(path) do
+                  if file ~= "." and file ~= ".." then
+                      local f = path..'/'..file
+                      print ("\t "..f)
+                      local attr = lfs.attributes (f)
+                      assert (type(attr) == "table")
+                      if attr.mode == "directory" then
+                          attrdir (f)
+                      else
+                          for name, value in pairs(attr) do
+                              print (name, value)
+                          end
+                      end
+                  end
+              end
+          end
+
+          attrdir (".")
+          '@
+
+          Set-Content "${{ env.LFS_TEST_FILE }}" $test_script -NoNewLine
+
+      - name: Test LuaFileSystem
+        run: lua "${{ env.LFS_TEST_FILE }}"

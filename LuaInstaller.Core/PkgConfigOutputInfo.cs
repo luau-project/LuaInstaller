@@ -131,7 +131,9 @@ namespace LuaInstaller.Core
         {
             get
             {
-                return Path.Combine(_destinationDir.Path, "share", "lua", _version.ShortVersion);
+                return _version.Version.CompareTo("5.2.4") > 0 ?
+                    Path.Combine(_destinationDir.Path, "share", "lua", _version.ShortVersion) :
+                    Path.Combine(_destinationDir.Bin, "lua");
             }
         }
 
@@ -139,7 +141,9 @@ namespace LuaInstaller.Core
         {
             get
             {
-                return Path.Combine(_destinationDir.Lib, "lua", _version.ShortVersion);
+                return _version.Version.CompareTo("5.2.4") > 0 ?
+                    Path.Combine(_destinationDir.Lib, "lua", _version.ShortVersion):
+                    _destinationDir.Bin;
             }
         }
 

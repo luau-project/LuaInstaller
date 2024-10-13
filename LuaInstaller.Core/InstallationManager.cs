@@ -327,7 +327,7 @@ namespace LuaInstaller.Core
                 
                 if (info.Attributes.HasFlag(FileAttributes.Directory))
                 {
-                    if (File.Exists(expectedDestSubentry))
+                    if (!Directory.Exists(expectedDestSubentry) && File.Exists(expectedDestSubentry))
                     {
                         File.Delete(expectedDestSubentry);
                     }

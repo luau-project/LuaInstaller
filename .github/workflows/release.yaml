@@ -1,0 +1,106 @@
+name: Release Arch
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+
+env:
+  LUAINSTALLER_VERSION: 0.1.1.0
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: Build
+
+    steps:
+
+      - name: Check arch input
+        run: |
+          $allowed_archs = "x86", "x64";
+          if (-not ($allowed_archs -contains "${{ inputs.arch }}"))
+          {
+            Write-Host "Arch not found";
+            exit /B 1;
+          }
+
+      - name: Checkout LuaInstaller
+        uses: actions/checkout@v4
+        with:
+          path: LuaInstaller
+
+      - name: Set environment variables
+        run: |
+          $wpf_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.EndUsers;
+          $console_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.Console;
+
+          Add-Content "${{ github.env }}" "WPF_DIR=${wpf_dir}";
+          Add-Content "${{ github.env }}" "CONSOLE_DIR=${console_dir}";
+
+      - name: Setup dotnet
+        run: |
+          $dotnet_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "dotnet-dir";
+
+          New-Item $dotnet_dir -ItemType Directory;
+
+          $dotnet_install_file = Join-Path -Path $dotnet_dir -ChildPath "dotnet-install.ps1";
+          $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
+
+          Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
+          & $dotnet_install_file -Architecture "${{ inputs.arch }}" -Version "6.0.427" -InstallDir $dotnet_dir;
+
+          Add-Content "${{ github.env }}" "DOTNET_RUNNER=${dotnet_runner}";
+
+      - name: Restore the solution
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            restore LuaInstaller\LuaInstaller.sln
+
+      - name: Build LuaInstaller.Console
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            publish LuaInstaller\LuaInstaller.Console\LuaInstaller.Console.csproj `
+            -o "${{ env.CONSOLE_DIR }}" `
+            -c Release `
+            -r win-${{ inputs.arch }} `
+            --self-contained true
+
+      - name: Build LuaInstaller
+        run: |
+          & "${{ env.DOTNET_RUNNER }}" `
+            publish LuaInstaller\LuaInstaller\LuaInstaller.csproj `
+            -o "${{ env.WPF_DIR }}" `
+            -c Release `
+            -r win-${{ inputs.arch }} `
+            --self-contained true
+
+      - name: Prepare artifacts to upload
+        run: |
+          mkdir release;
+          $dirs_to_archive = "${{ env.CONSOLE_DIR }}", "${{ env.WPF_DIR }}";
+
+          foreach ($dir in $dirs_to_archive)
+          {
+            $archive_name = (Get-Item $dir | Select-Object -ExpandProperty Name) + "-v${{ env.LUAINSTALLER_VERSION }}-${{ inputs.arch }}.zip";
+            $archive_path = Join-Path -Path "release" -ChildPath $archive_name;
+
+            Compress-Archive -Path $dir -DestinationPath $archive_path;
+
+            $current_file_sha256_hash = Get-FileHash $archive_path -Algorithm SHA256 | Select-Object -ExpandProperty Hash;
+            $current_file_md5_hash = Get-FileHash $archive_path -Algorithm MD5 | Select-Object -ExpandProperty Hash;
+            $current_file_sha256_file = Join-Path -Path "release" -ChildPath ($archive_name + "-SHA256.txt");
+            $current_file_md5_file = Join-Path -Path "release" -ChildPath ($archive_name + "-MD5.txt");
+            Set-Content -Path $current_file_sha256_file -Value $current_file_sha256_hash -NoNewline;
+            Set-Content -Path $current_file_md5_file -Value $current_file_md5_hash -NoNewline;
+          }
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-v${{ env.LUAINSTALLER_VERSION }}-${{ inputs.arch }}
+          path: release
+          retention-days: 1
+          if-no-files-found: error
+  

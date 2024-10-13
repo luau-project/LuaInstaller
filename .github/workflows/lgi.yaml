@@ -1,0 +1,182 @@
+name: LGI
+
+on:
+  workflow_call:
+    inputs:
+      gtk-major-version:
+        required: true
+        type: number
+
+      lua-version:
+        required: true
+        type: string
+
+env:
+  ARCH: x64
+  WINGTK_URL: https://github.com/wingtk/gvsbuild/releases/download/2024.10.0/GTK${{ inputs.gtk-major-version }}_Gvsbuild_2024.10.0_x64.zip
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    name: Build
+      
+    steps:
+
+      - name: Check lua-version input
+        run: |
+          if (-not ("${{ inputs.gtk-major-version }}" -match "^(3|4)$"))
+          {
+            Write-Host "Invalid Lua version (X.Y.Z) expected";
+            exit /B 1;
+          }
+
+      - name: Check lua-version input
+        run: |
+          if (-not ("${{ inputs.lua-version }}" -match "^(\d+)\.(\d+)(\.\d+)*$"))
+          {
+            Write-Host "Invalid Lua version (X.Y.Z) expected";
+            exit /B 1;
+          }
+
+      - name: Download and extract GTK ${{ inputs.gtk-major-version }} prebuilt binaries (MSVC toolset) provided by wingtk
+        run: |
+          $gtk_zip_file = Join-Path -Path "${{ runner.temp }}" -ChildPath "gtk.zip";
+          
+          # Download
+          Invoke-WebRequest -Uri ${{ env.WINGTK_URL }} -OutFile $gtk_zip_file;
+          
+          # Unzip
+          $gtk_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "gtk";
+          Expand-Archive -Path $gtk_zip_file -DestinationPath "${gtk_dir}";
+
+          $gtk_bin_dir = Join-Path -Path $gtk_dir -ChildPath "bin";
+          
+          # Set environment variable GTK_DIR pointing to GTK's directory
+          Add-Content "${{ github.env }}" "GTK_DIR=${gtk_dir}";
+          
+          # Set environment variable GTK_BIN_DIR pointing to GTK's bin directory
+          Add-Content "${{ github.env }}" "GTK_BIN_DIR=${gtk_bin_dir}";
+
+          # Place GTK bin directory on system PATH environment variable
+          Add-Content "${{ github.path }}" "${gtk_bin_dir}";
+      
+      - name: Checkout LuaInstaller
+        uses: actions/checkout@v4
+        with:
+          path: LuaInstaller
+      
+      - name: Install Lua ${{ inputs.lua-version }} on GTK's directory through LuaInstaller.Console, and set environment variables
+        run: |
+          $console_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.Console;
+
+          $dotnet_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "dotnet-dir";
+
+          New-Item $dotnet_dir -ItemType Directory;
+
+          $dotnet_install_file = Join-Path -Path $dotnet_dir -ChildPath "dotnet-install.ps1";
+          $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
+
+          Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
+          & $dotnet_install_file -Architecture "${{ env.ARCH }}" -Version "6.0.427" -InstallDir $dotnet_dir;
+          
+          & $dotnet_runner `
+            restore LuaInstaller\LuaInstaller.sln;
+          
+          & $dotnet_runner `
+            publish LuaInstaller\LuaInstaller.Console\LuaInstaller.Console.csproj `
+            -o "${console_dir}" `
+            -c Release `
+            -r win-${{ env.ARCH }} `
+            --self-contained true;
+            
+          $console = Join-Path -Path "${console_dir}" -ChildPath "LuaInstaller.Console.exe";
+          
+          & $console install `
+            "dest-dir=${{ env.GTK_DIR }}" `
+            arch=${{ env.ARCH }} `
+            "version=${{ inputs.lua-version }}";
+          
+          & lua -v;
+          
+          $lua_pc = Get-ChildItem "${{ env.GTK_DIR }}" -Recurse -File |
+            Where-Object Name -Like "lua*.pc" |
+            Select-Object -ExpandProperty BaseName -First 1;
+
+          # Append LUA_PC environment variable to help lgi configuration
+          Add-Content "${{ github.env }}" "LUA_PC=${lua_pc}";
+
+          $lua_short_version = "${{ inputs.lua-version }}" -split "\." |
+            Select-Object -First 2 |
+            Join-String -Separator ".";
+          
+          # Append LUA_SHORT_VERSION environment variable to help LuaRocks configuration, when needed.
+          Add-Content "${{ github.env }}" "LUA_SHORT_VERSION=${lua_short_version}";
+      
+      # Initial lgi setup (checkout + Python 3.12 + meson + ninja)
+      - name: Checkout lgi
+        uses: actions/checkout@v4
+        with:
+          repository: lgi-devs/lgi
+          path: lgi
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install meson
+        run: pip install meson
+      
+      - name: Install ninja
+        run: pip install ninja
+
+      - name: Setup MSVC dev-prompt
+        uses: ilammy/msvc-dev-cmd@v1
+      
+      - name: Configure lgi through meson
+        run: meson setup build-lgi lgi --prefix "${{ env.GTK_DIR }}" --buildtype release "-Dlua-pc=${{ env.LUA_PC }}" -Dtests=false
+    
+      - name: Build lgi
+        run: meson compile -C build-lgi
+      
+      - name: Install lgi
+        run: meson install -C build-lgi
+
+      - name: Create a simple test script using lgi
+        run: |
+          $test_script = @'
+          local lgi = assert(require("lgi"))
+          local Gtk = assert(lgi.require("Gtk", "${{ inputs.gtk-major-version }}.0"))
+
+          local app = Gtk.Application({ application_id = "org.lgi-devs.lgi" })
+
+          function app:on_activate()
+              local w = Gtk.ApplicationWindow()
+              w:set_default_size(900, 600)
+              w:set_title("My great title")
+
+              w.application = self
+
+              if ("${{ inputs.gtk-major-version }}" == "3") then
+                  w:show_all()
+              elseif ("${{ inputs.gtk-major-version }}" == "4") then
+                  w:present()
+              else
+                  error("Unknown GTK version")
+              end
+
+              w:close()
+          end
+
+          app:run()
+          '@;
+          
+          $test_file = Join-Path -Path "${{ runner.temp }}" -ChildPath "small-lgi-test.lua";
+
+          Set-Content $test_file $test_script -NoNewLine;
+
+          # Set the test file name on LGI_TEST_FILE environment variable
+          Add-Content "${{ github.env }}" "LGI_TEST_FILE=${test_file}";
+
+      - name: Test lgi
+        run: lua "${{ env.LGI_TEST_FILE }}"
