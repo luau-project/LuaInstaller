@@ -115,7 +115,9 @@ namespace LuaInstaller.Core
             }
             catch (BuildDllException ex)
             {
+#pragma warning disable CA2200
                 throw ex;
+#pragma warning restore CA2200
             }
             catch (Exception ex)
             {
@@ -203,7 +205,9 @@ namespace LuaInstaller.Core
             }
             catch (BuildInterpreterException ex)
             {
+#pragma warning disable CA2200
                 throw ex;
+#pragma warning restore CA2200
             }
             catch (Exception ex)
             {
@@ -298,7 +302,9 @@ namespace LuaInstaller.Core
             }
             catch (BuildCompilerException ex)
             {
+#pragma warning disable CA2200
                 throw ex;
+#pragma warning restore CA2200
             }
             catch (Exception ex)
             {
@@ -315,31 +321,67 @@ namespace LuaInstaller.Core
             }
         }
 
+        /// <summary>
+        /// Performs a hard-and-deep-copy from the <paramref name="workDir"/>
+        /// to the <paramref name="destDir"/>. Here, hard means that colliding
+        /// directory and file names are deleted / overwritten.
+        /// </summary>
+        /// <param name="workDir">Work directory of the built artifacts</param>
+        /// <param name="destDir">Destination directory chosen by the user</param>
         private void InstallOnDestDirCore(string workDir, string destDir)
         {
             Directory.CreateDirectory(destDir);
 
             foreach (string entry in Directory.GetFileSystemEntries(workDir))
             {
-                FileSystemInfo info = new FileInfo(entry);
                 string entryName = Path.GetFileName(entry);
                 string expectedDestSubentry = Path.Combine(destDir, entryName);
                 
-                if (info.Attributes.HasFlag(FileAttributes.Directory))
+                if (Directory.Exists(entry))
                 {
-                    if (!Directory.Exists(expectedDestSubentry) && File.Exists(expectedDestSubentry))
+                    if (File.Exists(expectedDestSubentry))
                     {
+                        // Normally, this is potentially a dangerous operation
+                        // on random files. However, assuming
+                        // the unpacked tarball is legit
+                        // and the user did not pick a sensitive
+                        // folder (system-managed, e.g., 'C:\Windows' and such),
+                        // it should be safe.
                         File.Delete(expectedDestSubentry);
                     }
 
                     InstallOnDestDirCore(entry, expectedDestSubentry);
                 }
+                else if (Directory.Exists(expectedDestSubentry))
+                {
+                    // Normally, this is potentially a dangerous operation
+                    // on random files. However, assuming
+                    // the unpacked tarball is legit
+                    // and the user did not pick a sensitive
+                    // folder (system-managed, e.g., 'C:\Windows' and such),
+                    // it should be safe.
+                    Directory.Delete(expectedDestSubentry, true);
+                }
                 else
                 {
+                    // Normally, this is potentially a dangerous operation
+                    // on random files. However, assuming
+                    // the unpacked tarball is legit
+                    // and the user did not pick a sensitive
+                    // folder (system-managed, e.g., 'C:\Windows' and such),
+                    // it should be safe.
                     File.Copy(entry, expectedDestSubentry, true);
                 }
             }
         }
+
+        /// <summary>
+        /// Performs a hard-and-deep-copy from the <paramref name="workDir"/>
+        /// to the <paramref name="destDir"/>. Here, hard means that colliding
+        /// directory and file names are deleted / overwritten.
+        /// </summary>
+        /// <param name="workDir">Work directory of the built artifacts</param>
+        /// <param name="destDir">Destination directory chosen by the user</param>
         private void InstallOnDestDir(LuaDestinationDirectory workDir, LuaDestinationDirectory destDir)
         {
             try
@@ -426,13 +468,15 @@ namespace LuaInstaller.Core
         }
         public void Build(LuaVersion version, string luaDestDir, VisualStudio vs, WindowsSdk winsdk, EnvironmentVariableTarget? variableTarget = null)
         {
+            string tempPath = Path.GetTempPath();
+
             string luaSourcesDir = Path.Combine(
-                Path.GetTempPath(),
+                tempPath,
                 "li-sources-" + Guid.NewGuid().ToString("N")
             );
 
             string luaWorkDir = Path.Combine(
-                Path.GetTempPath(),
+                tempPath,
                 "li-workdir-" + Guid.NewGuid().ToString("N")
             );
 

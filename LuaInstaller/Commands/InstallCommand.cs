@@ -223,7 +223,10 @@ namespace LuaInstaller.Commands
             IsInstalling = false;
 
             BackgroundWorker workerThread = (BackgroundWorker)sender;
-            workerThread.Dispose();
+            if (workerThread != null)
+            {
+                workerThread.Dispose();
+            }
         }
 
         private void WorkerThread_DoWork(object sender, DoWorkEventArgs e)

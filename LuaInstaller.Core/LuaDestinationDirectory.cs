@@ -58,7 +58,7 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("path");
             }
 
-            _path = path;
+            _path = System.IO.Path.GetFullPath(path);
             _bin = System.IO.Path.Combine(_path, "bin");
             _doc = System.IO.Path.Combine(_path, "doc");
             _include = System.IO.Path.Combine(_path, "include");

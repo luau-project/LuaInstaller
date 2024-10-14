@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
@@ -15,6 +16,9 @@ namespace LuaInstaller.Core
             _rgx = new Regex(@"(\d+)\.(\d+)$");
         }
 
+#if NET6_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
         private VisualStudioVersion[] GetVersionsCore(string initialReg)
         {
             SortedSet<VisualStudioVersion> values = new SortedSet<VisualStudioVersion>();
@@ -69,6 +73,9 @@ namespace LuaInstaller.Core
             return result;
         }
 
+#if NET6_0_OR_GREATER
+        [SupportedOSPlatform("windows")]
+#endif
         public VisualStudioVersion[] GetVersions()
         {
             return GetVersionsCore(Environment.Is64BitOperatingSystem ?
