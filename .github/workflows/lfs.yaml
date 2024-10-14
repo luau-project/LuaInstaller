@@ -89,7 +89,7 @@ jobs:
       - name: Setup Lua and LuaRocks environment variables
         run: |
           $lua_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "Lua";
-          $luarocks_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "luarocks-${{ inputs.lua-version }}-windows-64";
+          $luarocks_dir = Join-Path -Path "${{ runner.temp }}" -ChildPath "luarocks-${{ env.LUAROCKS_VERSION }}-windows-64";
           $lfs_test_file = Join-Path -Path "${{ runner.temp }}" -ChildPath "lfs-test.lua";
 
           Add-Content "${{ github.env }}" "LUA_DIR=${lua_dir}";
@@ -122,10 +122,10 @@ jobs:
           & $luaExe -v
 
       - name: Download LuaRocks
-        run: Invoke-WebRequest -Uri https://luarocks.org/releases/luarocks-${{ inputs.lua-version }}-windows-64.zip -OutFile luarocks-${{ inputs.lua-version }}-windows-64.zip
+        run: Invoke-WebRequest -Uri https://luarocks.org/releases/luarocks-${{ env.LUAROCKS_VERSION }}-windows-64.zip -OutFile luarocks-${{ env.LUAROCKS_VERSION }}-windows-64.zip
       
       - name: Extract LuaRocks
-        run: Expand-Archive luarocks-${{ inputs.lua-version }}-windows-64.zip -DestinationPath ([System.IO.Path]::GetDirectoryName("${{ env.LUAROCKS_DIR }}"))
+        run: Expand-Archive luarocks-${{ env.LUAROCKS_VERSION }}-windows-64.zip -DestinationPath ([System.IO.Path]::GetDirectoryName("${{ env.LUAROCKS_DIR }}"))
       
       - name: Add Lua and LuaRocks to system PATH environment variable
         run: |
