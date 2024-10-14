@@ -1,4 +1,4 @@
-![CI](https://github.com/luau-project/LuaInstaller/actions/workflows/ci.yaml/badge.svg)
+![CI](https://github.com/luau-project/LuaInstaller/actions/workflows/CI.yaml/badge.svg)
 
 ## Overview
 
