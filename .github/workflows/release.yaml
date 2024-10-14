@@ -8,12 +8,12 @@ on:
         type: string
 
 env:
-  LUAINSTALLER_VERSION: 0.1.1.0
+  LUAINSTALLER_VERSION: 0.2.0.0
 
 jobs:
-  build:
+  release:
     runs-on: windows-latest
-    name: Build
+    name: Release
 
     steps:
 

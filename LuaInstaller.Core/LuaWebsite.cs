@@ -151,6 +151,12 @@ namespace LuaInstaller.Core
 
             return result;
         }
+        
+        [ObsoleteAttribute("This method is deprecated. Use TryGetLatestVersion instead.")]
+        public static LuaVersion GetLatestVersion()
+        {
+            return QueryVersions()[0];
+        }
 
         public static LuaVersion FindVersion(string version)
         {
