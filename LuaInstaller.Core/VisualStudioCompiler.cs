@@ -46,6 +46,14 @@ namespace LuaInstaller.Core
             }
         }
 
+        public string DefaultObjectExtension
+        {
+            get
+            {
+                return ".obj";
+            }
+        }
+
         public void AddDefine(string name)
         {
             AddDefine(name, null);

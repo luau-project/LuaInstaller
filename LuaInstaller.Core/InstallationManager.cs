@@ -8,6 +8,7 @@ namespace LuaInstaller.Core
     {
         private readonly ICompiler _compiler;
         private readonly ILinker _linker;
+        private readonly string _objExtension;
         
         public event EventHandler<InstallationProgressEventArgs> InstallationProgressChanged;
         private void OnInstallationProgressChanged(InstallationProgress progress)
@@ -32,6 +33,7 @@ namespace LuaInstaller.Core
 
             _compiler = compiler;
             _linker = linker;
+            _objExtension = _compiler.DefaultObjectExtension;
         }
 
         private void LinkDll(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk)
@@ -53,7 +55,7 @@ namespace LuaInstaller.Core
                 }
 
                 DirectoryInfo srcDirInfo = new DirectoryInfo(srcDir);
-                foreach (string srcFile in srcDirInfo.EnumerateFiles("*.obj").Select(f => f.FullName))
+                foreach (string srcFile in srcDirInfo.EnumerateFiles("*" + _objExtension).Select(f => f.FullName))
                 {
                     _linker.AddInputFile(srcFile);
                 }
@@ -78,7 +80,6 @@ namespace LuaInstaller.Core
 
             try
             {
-                _compiler.AddDefine("_CRT_SECURE_NO_WARNINGS");
                 _compiler.AddDefine("LUA_BUILD_AS_DLL");
 
                 foreach (string inc in vs.IncludeDirectories)
@@ -151,7 +152,7 @@ namespace LuaInstaller.Core
                     _linker.AddLibPath(libPath);
                 }
 
-                _linker.AddInputFile(Path.Combine(srcDir, "lua.obj"));
+                _linker.AddInputFile(Path.Combine(srcDir, "lua" + _objExtension));
                 _linker.AddInputFile(luaLibPath);
 
                 if (_linker.Execute() != 0)
@@ -174,8 +175,6 @@ namespace LuaInstaller.Core
 
             try
             {
-                _compiler.AddDefine("_CRT_SECURE_NO_WARNINGS");
-
                 foreach (string inc in vs.IncludeDirectories)
                 {
                     _compiler.AddIncludeDirectory(inc);
@@ -242,7 +241,7 @@ namespace LuaInstaller.Core
                 }
 
                 DirectoryInfo srcDirInfo = new DirectoryInfo(srcDir);
-                foreach (string srcFile in srcDirInfo.EnumerateFiles("*.obj").Select(f => f.FullName))
+                foreach (string srcFile in srcDirInfo.EnumerateFiles("*" + _objExtension).Select(f => f.FullName))
                 {
                     _linker.AddInputFile(srcFile);
                 }
@@ -267,8 +266,6 @@ namespace LuaInstaller.Core
 
             try
             {
-                _compiler.AddDefine("_CRT_SECURE_NO_WARNINGS");
-
                 foreach (string inc in vs.IncludeDirectories)
                 {
                     _compiler.AddIncludeDirectory(inc);

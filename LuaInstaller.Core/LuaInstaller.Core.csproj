@@ -20,4 +20,8 @@
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
   </ItemGroup>
 
+  <ItemGroup>
+	<Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net461' "/>	
+  </ItemGroup>
+
 </Project>

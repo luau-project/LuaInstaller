@@ -321,16 +321,9 @@ namespace LuaInstaller.Console
                     }
             }
 
-            if (version == null)
+            if (version == null && !LuaWebsite.TryGetLatestVersion(out version))
             {
-                try
-                {
-                    version = LuaWebsite.GetLatestVersion();
-                }
-                catch (Exception ex)
-                {
-                    throw new CliArgumentsException("Unable to retrieve latest version from website", ex);
-                }
+                throw new CliArgumentsException("Unable to retrieve the latest version from the website");
             }
 
             if (vs == null)
