@@ -64,8 +64,8 @@ namespace LuaInstaller.Core
         public string VsDir { get { return _vsDir; } }
 
 
-		// override object.Equals
-		public override bool Equals(object obj)
+        // override object.Equals
+        public override bool Equals(object obj)
         {
             //       
             // See the full list of guidelines at
@@ -107,10 +107,10 @@ namespace LuaInstaller.Core
 
             while (result == 0 && i < len)
             {
-                result = otherVersionDigits[i] - versionDigits[i];
+                result = versionDigits[i] - otherVersionDigits[i];
                 i++;
             }
-            
+
             return result;
         }
     }

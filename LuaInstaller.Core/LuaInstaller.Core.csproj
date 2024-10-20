@@ -1,27 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0-windows;netstandard2.1;net461</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
-    <Title>LuaInstaller.Core</Title>
-    <Copyright>Copyright © luau-project 2024</Copyright>
-    <Version>0.2.0.0</Version>
-    <Authors>luau-project</Authors>
-    <Company>luau-project</Company>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-	<FileVersion>0.2.0.0</FileVersion>
-	<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0-windows;netstandard2.1;net461</TargetFrameworks>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<Title>LuaInstaller.Core</Title>
+		<Copyright>Copyright © luau-project 2024</Copyright>
+		<Version>0.3.0.0</Version>
+		<Authors>luau-project</Authors>
+		<Company>luau-project</Company>
+		<AssemblyVersion>0.3.0.0</AssemblyVersion>
+		<FileVersion>0.3.0.0</FileVersion>
+		<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="3.2.2146" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-    <PackageReference Include="SharpZipLib" Version="1.3.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="3.11.2177" />
+		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+		<PackageReference Include="SharpZipLib" Version="1.4.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net461' "/>	
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net461' "/>
+	</ItemGroup>
 
 </Project>

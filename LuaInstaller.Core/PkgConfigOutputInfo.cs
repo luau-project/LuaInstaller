@@ -5,9 +5,17 @@ namespace LuaInstaller.Core
 {
     public class PkgConfigOutputInfo
     {
+        private static readonly LuaVersion LMOD_CMOD_VERSION_CHANGE;
+
+        static PkgConfigOutputInfo()
+        {
+            LMOD_CMOD_VERSION_CHANGE = new LuaVersion(5, 2, 4);
+        }
+
         private readonly LuaVersion _version;
         private readonly LuaGeneratedBinaries _generatedBinaries;
         private readonly LuaDestinationDirectory _destinationDir;
+
 
         public PkgConfigOutputInfo(LuaVersion version, LuaGeneratedBinaries generatedBinaries, LuaDestinationDirectory luaDestinationDirectory)
         {
@@ -131,7 +139,7 @@ namespace LuaInstaller.Core
         {
             get
             {
-                return _version.Version.CompareTo("5.2.4") > 0 ?
+                return LuaVersionComparers.Ascending.Compare(_version, LMOD_CMOD_VERSION_CHANGE) > 0 ?
                     Path.Combine(_destinationDir.Path, "share", "lua", _version.ShortVersion) :
                     Path.Combine(_destinationDir.Bin, "lua");
             }
@@ -141,7 +149,7 @@ namespace LuaInstaller.Core
         {
             get
             {
-                return _version.Version.CompareTo("5.2.4") > 0 ?
+                return LuaVersionComparers.Ascending.Compare(_version, LMOD_CMOD_VERSION_CHANGE) > 0 ?
                     Path.Combine(_destinationDir.Lib, "lua", _version.ShortVersion):
                     _destinationDir.Bin;
             }

@@ -1,6 +1,7 @@
 ﻿using LuaInstaller.Commands;
 using LuaInstaller.Core;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -29,6 +30,9 @@ namespace LuaInstaller.ViewModels
 
         private string status;
         private InstallationProgress progress;
+
+        private readonly IDictionary<Architecture, Func<VisualStudio[]>> visualStudiosDispatcher;
+        private readonly IDictionary<Architecture, Func<WindowsSdk[]>> windowsSdksDispatcher;
 
         public Architecture Platform
         {
@@ -293,8 +297,20 @@ namespace LuaInstaller.ViewModels
 
             platform = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
 
+            visualStudiosDispatcher = new Dictionary<Architecture, Func<VisualStudio[]>>
+            {
+                { Architecture.X86, () => components.AllVisualStudioX86().ToArray() },
+                { Architecture.X64, () => components.AllVisualStudioX64().ToArray() }
+            };
+
+            windowsSdksDispatcher = new Dictionary<Architecture, Func<WindowsSdk[]>>
+            {
+                { Architecture.X86, () => components.AllWindowsSdkX86().ToArray() },
+                { Architecture.X64, () => components.AllWindowsSdkX64().ToArray() }
+            };
+
             visualStudioVersions = new ObservableCollection<VisualStudio>(
-                (platform == Architecture.X86 ? components.AllVisualStudioX86() : components.AllVisualStudioX64()).ToArray()
+                GetVisualStudios()
             );
 
             if (visualStudioVersions.Count > 0)
@@ -303,9 +319,8 @@ namespace LuaInstaller.ViewModels
             }
 
             winSdkVersions = new ObservableCollection<WindowsSdk>(
-                (platform == Architecture.X86 ? components.AllWindowsSdkX86() : components.AllWindowsSdkX64()).ToArray()
+                GetWindowsSdks()
             );
-
 
             if (winSdkVersions.Count > 0)
             {
@@ -313,82 +328,48 @@ namespace LuaInstaller.ViewModels
             }
         }
 
+        private VisualStudio[] GetVisualStudios()
+        {
+            return visualStudiosDispatcher[platform]();
+        }
+
+        private WindowsSdk[] GetWindowsSdks()
+        {
+            return windowsSdksDispatcher[platform]();
+        }
+
         private void ChangePlatform()
         {
-            switch (platform)
+            visualStudioVersions.Clear();
+            VisualStudio[] vsList = GetVisualStudios();
+            foreach (VisualStudio vs in vsList)
             {
-                case Architecture.X86:
-                    {
-                        visualStudioVersions.Clear();
-                        VisualStudio[] vsList = components.AllVisualStudioX86().ToArray();
-                        foreach (VisualStudio vs in vsList)
-                        {
-                            visualStudioVersions.Add(vs);
-                        }
-                        
-                        if (visualStudioVersions.Count > 0)
-                        {
-                            SelectedVisualStudioVersion = visualStudioVersions[0];
-                        }
-                        else
-                        {
-                            SelectedVisualStudioVersion = null;
-                        }
+                visualStudioVersions.Add(vs);
+            }
 
-                        winSdkVersions.Clear();
-                        WindowsSdk[] winSdkList = components.AllWindowsSdkX86().ToArray();
-                        foreach (WindowsSdk sdk in winSdkList)
-                        {
-                            winSdkVersions.Add(sdk);
-                        }
+            if (visualStudioVersions.Count > 0)
+            {
+                SelectedVisualStudioVersion = visualStudioVersions[0];
+            }
+            else
+            {
+                SelectedVisualStudioVersion = null;
+            }
 
-                        if (winSdkVersions.Count > 0)
-                        {
-                            SelectedWinSdkVersion = winSdkVersions[0];
-                        }
-                        else
-                        {
-                            SelectedWinSdkVersion = null;
-                        }
-                    }
-                    break;
-                case Architecture.X64:
-                    {
-                        visualStudioVersions.Clear();
-                        VisualStudio[] vsList = components.AllVisualStudioX64().ToArray();
-                        foreach (VisualStudio vs in vsList)
-                        {
-                            visualStudioVersions.Add(vs);
-                        }
+            winSdkVersions.Clear();
+            WindowsSdk[] winSdkList = GetWindowsSdks();
+            foreach (WindowsSdk sdk in winSdkList)
+            {
+                winSdkVersions.Add(sdk);
+            }
 
-                        if (visualStudioVersions.Count > 0)
-                        {
-                            SelectedVisualStudioVersion = visualStudioVersions[0];
-                        }
-                        else
-                        {
-                            SelectedVisualStudioVersion = null;
-                        }
-
-                        winSdkVersions.Clear();
-                        WindowsSdk[] winSdkList = components.AllWindowsSdkX64().ToArray();
-                        foreach (WindowsSdk sdk in winSdkList)
-                        {
-                            winSdkVersions.Add(sdk);
-                        }
-
-                        if (winSdkVersions.Count > 0)
-                        {
-                            SelectedWinSdkVersion = winSdkVersions[0];
-                        }
-                        else
-                        {
-                            SelectedWinSdkVersion = null;
-                        }
-                    }
-                    break;
-                default:
-                    break;
+            if (winSdkVersions.Count > 0)
+            {
+                SelectedWinSdkVersion = winSdkVersions[0];
+            }
+            else
+            {
+                SelectedWinSdkVersion = null;
             }
         }
 

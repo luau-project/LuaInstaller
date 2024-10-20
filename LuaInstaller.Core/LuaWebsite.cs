@@ -27,6 +27,11 @@ namespace LuaInstaller.Core
             _empty = new LuaVersion[0];
         }
 
+        private static string GetDownloadUrlForLuaVersion(LuaVersion version)
+        {
+            return string.Format("{0}/lua-{1}.tar.gz", LUA_DOWNLOAD_URL, version.Version);
+        }
+
         private static int GenerateRandomInt32()
         {
             byte[] buffer = new byte[sizeof(int)];
@@ -93,7 +98,7 @@ namespace LuaInstaller.Core
 
         private static LuaVersion[] GetVersionsFromHtmlString(string html)
         {
-            SortedSet<LuaVersion> result = new SortedSet<LuaVersion>();
+            SortedSet<LuaVersion> result = new SortedSet<LuaVersion>(LuaVersionComparers.Descending);
 
             MatchCollection matches = Regex.Matches(html, @"lua-(\d+)\.(\d+)(\.(\d+))?\.tar\.gz");
 
@@ -111,9 +116,7 @@ namespace LuaInstaller.Core
                         build = int.Parse(m.Groups[4].Value);
                     }
 
-                    string downloadUrl = string.Format("{0}/{1}", LUA_DOWNLOAD_URL, m.Value);
-
-                    LuaVersion version = new LuaVersion(major, minor, build, downloadUrl);
+                    LuaVersion version = new LuaVersion(major, minor, build);
 
                     if (!result.Contains(version))
                     {
@@ -152,7 +155,7 @@ namespace LuaInstaller.Core
             return result;
         }
         
-        [ObsoleteAttribute("This method is deprecated. Use TryGetLatestVersion instead.")]
+        [Obsolete("This method is deprecated. Use TryGetLatestVersion instead.")]
         public static LuaVersion GetLatestVersion()
         {
             return QueryVersions()[0];
@@ -164,39 +167,94 @@ namespace LuaInstaller.Core
             return Array.Find(versions, v => v.Version == version);
         }
 
-        public static void DownloadAndExtract(string destDir, string workingDir, LuaVersion version)
+        /// <summary>
+        /// Downloads the source code of Lua (<paramref name="version"/>)
+        /// to directory <paramref name="workingDir"/>. The compressed archive
+        /// is going to be extracted inside of the directory <paramref name="destDir"/>.
+        /// </summary>
+        /// <param name="destDir">Directory to extract the source code</param>
+        /// <param name="workingDir">Directory to hold the compressed archive which contains the source code</param>
+        /// <param name="version">The version of Lua</param>
+        /// <returns>The path to the directory containing the source code</returns>
+        /// <exception cref="DownloadAndExtractException"></exception>
+        internal static string DownloadAndExtract(string destDir, string workingDir, LuaVersion version)
         {
-            string fileName = Path.Combine(workingDir, string.Format("{0}.tar.gz", version.ExtractedDirectoryName));
+            if (!Directory.Exists(destDir))
+            {
+                throw new DownloadAndExtractException("destDir does not exist");
+            }
+
+            if (!Directory.Exists(workingDir))
+            {
+                throw new DownloadAndExtractException("workingDir does not exist");
+            }
+
+            if (version == null)
+            {
+                throw new DownloadAndExtractException("version cannot be null");
+            }
+
+            string fileName = null;
+            
+            try
+            {
+                fileName = Path.Combine(workingDir, string.Format("{0}.tar.gz", Guid.NewGuid().ToString("N")));
+            }
+            catch (Exception e)
+            {
+                throw new DownloadAndExtractException("Failed to create a filename for Lua's tarball", e);
+            }
 
             bool success = RetryStrategy(
                 () =>
                 {
-                    using (HttpResponseMessage response = _client.GetAsync(version.DownloadUrl).Result)
+                    string downloadUrl = GetDownloadUrlForLuaVersion(version);
+                    
+                    using (HttpResponseMessage response = _client.GetAsync(downloadUrl).Result)
                     {
                         response.EnsureSuccessStatusCode();
 
+                        using (HttpContent content = response.Content)
                         using (FileStream fs = File.Create(fileName))
                         {
-                            response.Content.CopyToAsync(fs).Wait();
+                            content.CopyToAsync(fs).Wait();
                         }
                     }
                 },
                 MAX_RETRIES
             );
 
+            string sourcesDir = null;
+
             if (success)
             {
-                using (FileStream fs = File.OpenRead(fileName))
+                try
                 {
+                    using (FileStream fs = File.OpenRead(fileName))
                     using (GZipInputStream gzs = new GZipInputStream(fs))
+                    using (TarArchive tar = TarArchive.CreateInputTarArchive(gzs, null))
                     {
-                        using (TarArchive tar = TarArchive.CreateInputTarArchive(gzs, null))
-                        {
-                            tar.ExtractContents(destDir);
-                        }
+                        tar.ExtractContents(destDir);
+
+                        sourcesDir = Path.Combine(destDir, "lua-" + version.Version);
                     }
                 }
+                catch (Exception e)
+                {
+                    throw new DownloadAndExtractException("Failed to extract Lua source code", e);
+                }
             }
+            else
+            {
+                throw new DownloadAndExtractException("Failed to download Lua source code");
+            }
+
+            if (!Directory.Exists(sourcesDir))
+            {
+                throw new DownloadAndExtractException("Directory containing the source code of Lua was not found");
+            }
+
+            return sourcesDir;
         }
     }
 }

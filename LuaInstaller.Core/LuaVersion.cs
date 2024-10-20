@@ -7,19 +7,12 @@ namespace LuaInstaller.Core
         private readonly int _major;
         private readonly int _minor;
         private readonly int? _build;
-        private readonly string _downloadUrl;
 
-        public LuaVersion(int major, int minor, int? build, string downloadUrl)
+        public LuaVersion(int major, int minor, int? build)
         {
-            if (downloadUrl == null)
-            {
-                throw new ArgumentNullException("downloadUrl");
-            }
-
             _major = major;
             _minor = minor;
             _build = build;
-            _downloadUrl = downloadUrl;
         }
 
         public int Major
@@ -43,14 +36,6 @@ namespace LuaInstaller.Core
             get
             {
                 return _build;
-            }
-        }
-
-        public string DownloadUrl
-        {
-            get
-            {
-                return _downloadUrl;
             }
         }
 
@@ -96,12 +81,9 @@ namespace LuaInstaller.Core
             }
         }
 
-        public string ExtractedDirectoryName
+        public override string ToString()
         {
-            get
-            {
-                return "lua-" + Version;
-            }
+            return Version;
         }
 
         // override object.Equals
@@ -135,7 +117,7 @@ namespace LuaInstaller.Core
 
         public int CompareTo(LuaVersion other)
         {
-            return other.GetHashCode() - GetHashCode();
+            return GetHashCode() - other.GetHashCode();
         }
     }
 }

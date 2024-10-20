@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
 
 namespace LuaInstaller.Core
 {
@@ -10,23 +9,23 @@ namespace LuaInstaller.Core
         private readonly IWindowsSdkFactory _winsdkFactory;
         private readonly IVisualStudioVersionLocator[] _visualStudioVersionLocators;
         private readonly IWindowsSdkVersionLocator[] _windowsSdkVersionLocators;
-        
+
         public InstalledComponents(
             IVisualStudioFactory vsFactory,
             IWindowsSdkFactory winsdkFactory,
             IVisualStudioVersionLocator[] visualStudioVersionLocators,
             IWindowsSdkVersionLocator[] windowsSdkVersionLocators
-            )
-		{
-			if (vsFactory == null)
-			{
-				throw new ArgumentNullException("vsFactory");
-			}
+        )
+        {
+            if (vsFactory == null)
+            {
+                throw new ArgumentNullException("vsFactory");
+            }
 
-			if (winsdkFactory == null)
-			{
-				throw new ArgumentNullException("winsdkFactory");
-			}
+            if (winsdkFactory == null)
+            {
+                throw new ArgumentNullException("winsdkFactory");
+            }
 
             if (visualStudioVersionLocators == null)
             {
@@ -38,28 +37,29 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("windowsSdkVersionLocators");
             }
 
-			_vsFactory = vsFactory;
-			_winsdkFactory = winsdkFactory;
+            _vsFactory = vsFactory;
+            _winsdkFactory = winsdkFactory;
 
-			_visualStudioVersionLocators = new IVisualStudioVersionLocator[visualStudioVersionLocators.Length];
+            _visualStudioVersionLocators = new IVisualStudioVersionLocator[visualStudioVersionLocators.Length];
             visualStudioVersionLocators.CopyTo(_visualStudioVersionLocators, 0);
 
             _windowsSdkVersionLocators = new IWindowsSdkVersionLocator[windowsSdkVersionLocators.Length];
             windowsSdkVersionLocators.CopyTo(_windowsSdkVersionLocators, 0);
-		}
+        }
 
-		public InstalledComponents()
-            : this(
-                  new DefaultVisualStudioFactory(),
-                  new DefaultWindowsSdkFactory(),
-                  new IVisualStudioVersionLocator[2] {
-                      new VisualStudioVersionsFromRegQuery(),
-                      new VisualStudioVersionsFromSetupApi()
-                  },
-                  new IWindowsSdkVersionLocator[2] {
-                      new WindowsSdkVerionsFromRegQuery(),
-                      new WindowsSdkVerionsFromVisualStudioInstall()
-                  })
+        public InstalledComponents()
+        : this(
+            new DefaultVisualStudioFactory(),
+            new DefaultWindowsSdkFactory(),
+            new IVisualStudioVersionLocator[2] {
+                new VisualStudioVersionsFromRegQuery(),
+                new VisualStudioVersionsFromSetupApi()
+            },
+            new IWindowsSdkVersionLocator[2] {
+                new WindowsSdkVerionsFromRegQuery(),
+                new WindowsSdkVerionsFromVisualStudioInstall()
+            }
+        )
         {
 
         }
@@ -68,12 +68,12 @@ namespace LuaInstaller.Core
         {
             return AllVisualStudioCore(Architecture.X64);
         }
-        
+
         public IEnumerable<VisualStudio> AllVisualStudioX86()
         {
             return AllVisualStudioCore(Architecture.X86);
         }
-        
+
         private IEnumerable<VisualStudio> AllVisualStudioCore(Architecture arch)
         {
             List<VisualStudio> visualStudios = new List<VisualStudio>();
@@ -90,8 +90,8 @@ namespace LuaInstaller.Core
                     }
                 }
             }
-            
-            visualStudios.Sort();
+
+            visualStudios.Sort(VisualStudioComparers.Descending);
 
             return visualStudios;
         }
@@ -107,9 +107,9 @@ namespace LuaInstaller.Core
         }
 
         private IEnumerable<WindowsSdk> AllWindowsSdkCore(Architecture arch)
-		{
+        {
             List<WindowsSdk> windowsSdks = new List<WindowsSdk>();
-            
+
             foreach (IWindowsSdkVersionLocator locator in _windowsSdkVersionLocators)
             {
                 foreach (WindowsSdkVersion version in locator.GetVersions())
@@ -123,9 +123,9 @@ namespace LuaInstaller.Core
                 }
             }
 
-            windowsSdks.Sort();
+            windowsSdks.Sort(WindowsSdkComparers.Descending);
 
             return windowsSdks;
-		}
-	}
+        }
+    }
 }

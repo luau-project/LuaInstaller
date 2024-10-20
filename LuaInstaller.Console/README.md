@@ -1,8 +1,8 @@
-﻿# Overview
+﻿# LuaInstaller.Console
+
+## Overview
 
 This tool is meant to be used from the command prompt ```cmd.exe``` or in CI servers by people that needs to test Lua libraries on Windows. Thus, this tool frees the developer from the hassle to create scripts to perform Lua installation.
-
-# How To
 
 ## Get Informations
 
@@ -89,7 +89,9 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
 LuaInstaller.Console.exe install
 ```
 
-**Note**: Installs the latest version of Lua, using the latest version of Visual C++ and Windows SDK for x64 on a 64 Bit operating system or x86 architecture otherwise.
+> [!NOTE]
+> 
+> Installs the latest version of Lua, using the latest version of MSVC and Windows SDK for x64 on a 64 Bit operating system or x86 architecture otherwise.
 
 ### Machine-wide installation (Run As Admin - required)
 
@@ -97,5 +99,7 @@ LuaInstaller.Console.exe install
 LuaInstaller.Console.exe install "dest-dir=C:\Program Files (x86)\Lua" version=5.1.5 env-var=machine
 ```
 
-**Note**: Installs Lua ```5.1.5``` in the ```C:\Program Files (x86)\Lua``` folder and also sets environment variables
+> [!NOTE]
+> 
+> Installs Lua ```5.1.5``` in the ```C:\Program Files (x86)\Lua``` folder and also sets environment variables
 machine-wide.

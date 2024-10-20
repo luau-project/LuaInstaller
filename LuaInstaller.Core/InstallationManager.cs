@@ -467,9 +467,14 @@ namespace LuaInstaller.Core
         {
             string tempPath = Path.GetTempPath();
 
-            string luaSourcesDir = Path.Combine(
+            string luaDownloadDir = Path.Combine(
                 tempPath,
-                "li-sources-" + Guid.NewGuid().ToString("N")
+                "li-download-" + Guid.NewGuid().ToString("N")
+            );
+
+            string luaExtractionDir = Path.Combine(
+                tempPath,
+                "li-extraction-" + Guid.NewGuid().ToString("N")
             );
 
             string luaWorkDir = Path.Combine(
@@ -479,13 +484,14 @@ namespace LuaInstaller.Core
 
             try
             {
-                Directory.CreateDirectory(luaSourcesDir);
+                Directory.CreateDirectory(luaDownloadDir);
+                Directory.CreateDirectory(luaExtractionDir);
                 Directory.CreateDirectory(luaWorkDir);
 
-                LuaWebsite.DownloadAndExtract(luaSourcesDir, luaSourcesDir, version);
+                string luaSourcesDir = LuaWebsite.DownloadAndExtract(luaDownloadDir, luaExtractionDir, version);
                 OnInstallationProgressChanged(Core.InstallationProgress.Download);
 
-                LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(Path.Combine(luaSourcesDir, version.ExtractedDirectoryName));
+                LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(luaSourcesDir);
                 LuaDestinationDirectory workDir = new LuaDestinationDirectory(luaWorkDir);
                 LuaGeneratedBinaries generatedBinaries = new LuaGeneratedBinaries(version);
                 
@@ -530,9 +536,14 @@ namespace LuaInstaller.Core
             }
             finally
             {
-                if (Directory.Exists(luaSourcesDir))
+                if (Directory.Exists(luaDownloadDir))
                 {
-                    Directory.Delete(luaSourcesDir, true);
+                    Directory.Delete(luaDownloadDir, true);
+                }
+
+                if (Directory.Exists(luaExtractionDir))
+                {
+                    Directory.Delete(luaExtractionDir, true);
                 }
 
                 if (Directory.Exists(luaWorkDir))

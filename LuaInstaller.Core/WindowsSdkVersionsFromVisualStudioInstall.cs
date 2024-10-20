@@ -20,7 +20,7 @@ namespace LuaInstaller.Core
 #endif
         private WindowsSdkVersion[] GetVersionsCore(string initialReg)
         {
-            SortedSet<WindowsSdkVersion> values = new SortedSet<WindowsSdkVersion>();
+            SortedSet<WindowsSdkVersion> values = new SortedSet<WindowsSdkVersion>(WindowsSdkVersionComparers.Descending);
 
             using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(initialReg))
             {

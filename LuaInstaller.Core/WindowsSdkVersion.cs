@@ -106,7 +106,7 @@ namespace LuaInstaller.Core
 
             while (result == 0 && i < len)
             {
-                result = otherVersionDigits[i] - versionDigits[i];
+                result = versionDigits[i] - otherVersionDigits[i];
                 i++;
             }
             

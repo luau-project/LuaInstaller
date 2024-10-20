@@ -21,7 +21,7 @@ namespace LuaInstaller.Core
 #endif
         private VisualStudioVersion[] GetVersionsCore(string initialReg)
         {
-            SortedSet<VisualStudioVersion> values = new SortedSet<VisualStudioVersion>();
+            SortedSet<VisualStudioVersion> values = new SortedSet<VisualStudioVersion>(VisualStudioVersionComparers.Descending);
 
             using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(initialReg))
             {

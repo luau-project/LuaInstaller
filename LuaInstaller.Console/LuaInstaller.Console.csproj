@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\LuaInstaller.Core\LuaInstaller.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LuaInstaller.Core\LuaInstaller.Core.csproj" />
+	</ItemGroup>
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
-    <Title>LuaInstaller.Console</Title>
-    <Copyright>Copyright © luau-project 2024</Copyright>
-    <Version>0.2.0.0</Version>
-    <Authors>luau-project</Authors>
-    <Company>luau-project</Company>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
-	<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<Title>LuaInstaller.Console</Title>
+		<Copyright>Copyright © luau-project 2024</Copyright>
+		<Version>0.3.0.0</Version>
+		<Authors>luau-project</Authors>
+		<Company>luau-project</Company>
+		<AssemblyVersion>0.3.0.0</AssemblyVersion>
+		<FileVersion>0.3.0.0</FileVersion>
+		<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+	</PropertyGroup>
 
 </Project>
