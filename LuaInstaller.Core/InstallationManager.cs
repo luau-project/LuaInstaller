@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
@@ -34,6 +35,50 @@ namespace LuaInstaller.Core
             _compiler = compiler;
             _linker = linker;
             _objExtension = _compiler.DefaultObjectExtension;
+        }
+
+        private AbstractLuaCompatibility GetLuaCompatibility(string srcDir)
+        {
+            bool result = false;
+            string luaCompat = null;
+
+            string srcMakefile = Path.Combine(srcDir, "Makefile");
+
+            if (File.Exists(srcMakefile))
+            {
+                using (FileStream fileStream = File.OpenRead(srcMakefile))
+                using (StreamReader Makefile = new StreamReader(fileStream))
+                {
+                    string line = null;
+                    Match match = null;
+                    Regex regex = new Regex(@"\-D(LUA_COMPAT_[a-zA-Z0-9_]+)\b");
+
+                    while (!(result || Makefile.EndOfStream))
+                    {
+                        line = Makefile.ReadLine();
+
+                        match = regex.Match(line);
+
+                        if (match.Success)
+                        {
+                            luaCompat = match.Groups[1].Value;
+
+                            result = true;
+                        }
+                    }
+                }
+            }
+
+            AbstractLuaCompatibility compatibility;
+            if (result)
+            {
+                compatibility = new LuaCompatibility(luaCompat);
+            }
+            else
+            {
+                compatibility = new LuaNoCompatibility();
+            }
+            return compatibility;
         }
 
         private void LinkDll(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk)
@@ -72,7 +117,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
-        private void BuildDll(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk)
+        private void BuildDll(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
                 Path.GetTempPath(), "li-build-dll-" + Guid.NewGuid().ToString("N")
@@ -80,6 +125,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                luaCompat.TryAddDefine(_compiler);
+
                 _compiler.AddDefine("LUA_BUILD_AS_DLL");
 
                 foreach (string inc in vs.IncludeDirectories)
@@ -167,7 +214,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
-        private void BuildInterpreter(string srcDir, string luaLibPath, string outputFile, VisualStudio vs, WindowsSdk winsdk)
+        private void BuildInterpreter(string srcDir, string luaLibPath, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
                 Path.GetTempPath(), "li-interpreter-" + Guid.NewGuid().ToString("N")
@@ -175,6 +222,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                luaCompat.TryAddDefine(_compiler);
+
                 foreach (string inc in vs.IncludeDirectories)
                 {
                     _compiler.AddIncludeDirectory(inc);
@@ -258,7 +307,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
-        private void BuildCompiler(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk)
+        private void BuildCompiler(string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
                 Path.GetTempPath(), "li-build-compiler-" + Guid.NewGuid().ToString("N")
@@ -266,6 +315,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                luaCompat.TryAddDefine(_compiler);
+
                 foreach (string inc in vs.IncludeDirectories)
                 {
                     _compiler.AddIncludeDirectory(inc);
@@ -392,11 +443,11 @@ namespace LuaInstaller.Core
             }
         }
         
-        private void CreatePkgConfigFile(LuaDestinationDirectory destDir, LuaVersion version, LuaGeneratedBinaries generatedBinaries)
+        private void CreatePkgConfigFile(LuaDestinationDirectory destDir, LuaVersion version, LuaGeneratedBinaries generatedBinaries, AbstractLuaCompatibility luaCompat)
         {
             try
             {
-                PkgConfigOutputInfo pkgConfigOutput = new PkgConfigOutputInfo(version, generatedBinaries, destDir);
+                PkgConfigOutputInfo pkgConfigOutput = new PkgConfigOutputInfo(version, generatedBinaries, destDir, luaCompat);
                 
                 if (pkgConfigOutput.WritePkgConfigFile())
                 {
@@ -494,6 +545,8 @@ namespace LuaInstaller.Core
                 LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(luaSourcesDir);
                 LuaDestinationDirectory workDir = new LuaDestinationDirectory(luaWorkDir);
                 LuaGeneratedBinaries generatedBinaries = new LuaGeneratedBinaries(version);
+
+                AbstractLuaCompatibility luaCompat = GetLuaCompatibility(sourcesDir.Src);
                 
                 workDir.CreateFrom(sourcesDir);
 
@@ -501,14 +554,16 @@ namespace LuaInstaller.Core
                     sourcesDir.Src,
                     Path.Combine(workDir.Lib, generatedBinaries.DllName),
                     vs,
-                    winsdk
+                    winsdk,
+                    luaCompat
                 );
                 BuildInterpreter(
                     sourcesDir.Src,
                     Path.Combine(workDir.Lib, generatedBinaries.ImportLibName), 
                     Path.Combine(workDir.Bin, generatedBinaries.InterpreterName),
                     vs,
-                    winsdk
+                    winsdk,
+                    luaCompat
                 );
                 File.Copy(
                     Path.Combine(workDir.Lib, generatedBinaries.DllName),
@@ -519,7 +574,8 @@ namespace LuaInstaller.Core
                     sourcesDir.Src,
                     Path.Combine(workDir.Bin, generatedBinaries.CompilerName),
                     vs,
-                    winsdk
+                    winsdk,
+                    luaCompat
                 );
 
                 if (File.Exists(Path.Combine(workDir.Lib, generatedBinaries.DllName)))
@@ -531,7 +587,7 @@ namespace LuaInstaller.Core
 
                 LuaDestinationDirectory destDir = new LuaDestinationDirectory(luaDestDir);
                 InstallOnDestDir(workDir, destDir);
-                CreatePkgConfigFile(destDir, version, generatedBinaries);
+                CreatePkgConfigFile(destDir, version, generatedBinaries, luaCompat);
                 SetEnvironmentVariables(destDir, variableTarget);
             }
             finally

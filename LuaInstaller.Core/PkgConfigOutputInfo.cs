@@ -15,9 +15,14 @@ namespace LuaInstaller.Core
         private readonly LuaVersion _version;
         private readonly LuaGeneratedBinaries _generatedBinaries;
         private readonly LuaDestinationDirectory _destinationDir;
+        private readonly AbstractLuaCompatibility _luaCompat;
 
-
-        public PkgConfigOutputInfo(LuaVersion version, LuaGeneratedBinaries generatedBinaries, LuaDestinationDirectory luaDestinationDirectory)
+        public PkgConfigOutputInfo(
+            LuaVersion version,
+            LuaGeneratedBinaries generatedBinaries,
+            LuaDestinationDirectory luaDestinationDirectory,
+            AbstractLuaCompatibility luaCompat
+        )
         {
             if (version == null)
             {
@@ -34,9 +39,15 @@ namespace LuaInstaller.Core
                 throw new ArgumentNullException("luaDestinationDirectory");
             }
 
+            if (luaCompat == null)
+            {
+                throw new ArgumentNullException("luaCompat");
+            }
+
             _version = version;
             _generatedBinaries = generatedBinaries;
             _destinationDir = luaDestinationDirectory;
+            _luaCompat = luaCompat;
         }
 
         public string Prefix
@@ -100,6 +111,58 @@ namespace LuaInstaller.Core
             get
             {
                 return _version.ShortVersion;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Lua";
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return "Lua language engine";
+            }
+        }
+
+        public string Libs
+        {
+            get
+            {
+                return "-L${libdir} -l${lib_name}";
+            }
+        }
+
+        public string Requires
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        public string Cflags
+        {
+            get
+            {
+                string compatibilitySwitch = _luaCompat.HasCompatibility ?
+                    string.Format(" -D{0}", ((LuaCompatibility)_luaCompat).Value) :
+                    string.Empty;
+
+                return "-I${includedir}" + compatibilitySwitch;
+            }
+        }
+
+        public AbstractLuaCompatibility LuaCompat
+        {
+            get
+            {
+                return _luaCompat;
             }
         }
 
@@ -173,12 +236,13 @@ namespace LuaInstaller.Core
                 writer.WriteLine(string.Format("INSTALL_LMOD={0}", InstallLuaModules.Replace('\\', '/')));
                 writer.WriteLine(string.Format("INSTALL_CMOD={0}", InstallCModules.Replace('\\', '/')));
                 writer.WriteLine();
-                writer.WriteLine("Name: Lua");
-                writer.WriteLine("Description: Lua language engine");
-                writer.WriteLine("Version: ${R}");
-                writer.WriteLine("Requires:");
-                writer.WriteLine("Libs: -L${libdir} -l${lib_name}");
-                writer.WriteLine("Cflags: -I${includedir}");
+                writer.WriteLine(string.Format("Name: {0}", Name));
+                writer.WriteLine(string.Format("Description: {0}", Description));
+                writer.WriteLine(string.Format("Version: {0}", Version));
+                writer.WriteLine(string.Format("Requires: {0}", Requires));
+                writer.WriteLine(string.Format("Libs: {0}", Libs));
+                writer.WriteLine(string.Format("Cflags: {0}", Cflags));
+
                 writer.WriteLine();
             }
         }
