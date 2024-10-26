@@ -1,4 +1,5 @@
 ![CI](https://github.com/luau-project/LuaInstaller/actions/workflows/CI.yaml/badge.svg)
+[![github release](https://img.shields.io/github/release/luau-project/LuaInstaller.svg?logo=github)](https://github.com/luau-project/LuaInstaller/releases/latest)
 
 ## Overview
 

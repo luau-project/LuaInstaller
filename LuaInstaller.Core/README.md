@@ -70,7 +70,7 @@ EnvironmentVariableTarget? env = null;
 VisualStudioToolset toolset = vs.Toolset;
 
 ICompiler compiler = new VisualStudioCompiler(toolset.Cl);
-ILinker compiler = new VisualStudioLinker(toolset.Link);
+ILinker linker = new VisualStudioLinker(toolset.Link);
 
 InstallationManager manager = new InstallationManager(compiler, linker);
 
