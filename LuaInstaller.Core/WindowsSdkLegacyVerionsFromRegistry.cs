@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace LuaInstaller.Core
 {
-    public class WindowsSdkVerionsFromRegQuery : IWindowsSdkVersionLocator
+    public class WindowsSdkLegacyVerionsFromRegistry : IWindowsSdkVersionLocator
     {
         private static readonly Regex _rgx;
 
-        static WindowsSdkVerionsFromRegQuery()
+        static WindowsSdkLegacyVerionsFromRegistry()
         {
             _rgx = new Regex(@"^[vV](\d+)\.(\d+)$");
         }
@@ -36,22 +36,27 @@ namespace LuaInstaller.Core
                         Match match = _rgx.Match(subKey);
                         if (match.Success)
                         {
-                            using (RegistryKey sdkReg = reg.OpenSubKey(subKey))
+                            int major = int.Parse(match.Groups[1].Value);
+
+                            if (major < 10)
                             {
-                                if (sdkReg != null)
+                                using (RegistryKey sdkReg = reg.OpenSubKey(subKey))
                                 {
-                                    string installationFolder = (string)(sdkReg.GetValue("InstallationFolder"));
-                                    string productVersion = (string)(sdkReg.GetValue("ProductVersion"));
-
-                                    if (installationFolder != null && productVersion != null)
+                                    if (sdkReg != null)
                                     {
-                                        int major = int.Parse(match.Groups[1].Value);
-                                        int minor = int.Parse(match.Groups[2].Value);
+                                        string installationFolder = (string)(sdkReg.GetValue("InstallationFolder"));
+                                        string productVersion = (string)(sdkReg.GetValue("ProductVersion"));
 
-                                        values.Add(new WindowsSdkVersion(major, minor, installationFolder, productVersion));
+                                        if (installationFolder != null && productVersion != null)
+                                        {
+                                            int minor = int.Parse(match.Groups[2].Value);
+
+                                            values.Add(new WindowsSdkVersion(major, minor, installationFolder, productVersion));
+                                        }
                                     }
                                 }
                             }
+
                         }
                     }
                 }

@@ -50,27 +50,39 @@ namespace LuaInstaller.Core
                         productDir = "win8";
                     }
                 }
+                else if (version.Major == 7)
+                {
+                    productDir = string.Empty;
+                }
 
                 if (productDir != null)
                 {
-                    string includeProductDir = version.Major >= 10 ?  Path.Combine(version.InstallationDir, "Include", productDir) : Path.Combine(version.InstallationDir, "Include");
-                    string libProductDir = Path.Combine(version.InstallationDir, "Lib", productDir);
+                    string includeProductDir = version.Major >= 10 ?
+                        Path.Combine(version.InstallationDir, "Include", productDir) :
+                        Path.Combine(version.InstallationDir, "Include");
+                    
+                    string libProductDir = version.Major > 7 ?
+                        Path.Combine(version.InstallationDir, "Lib", productDir) : 
+                        Path.Combine(version.InstallationDir, "Lib");
 
                     if (Directory.Exists(includeProductDir) && Directory.Exists(libProductDir))
                     {
                         IncludeDirectories includeDirectories = new IncludeDirectories(
-                            Directory.EnumerateDirectories(includeProductDir).ToArray()
+                            version.Major > 7 ?
+                                Directory.EnumerateDirectories(includeProductDir).ToArray() :
+                                Directory.EnumerateDirectories(includeProductDir).Union(new string[1] { includeProductDir }).ToArray()
                         );
 
                         string archStr = arch.ToString();
 
                         LibPathDirectories libPathDirectories = new LibPathDirectories(
-                            (
+                            version.Major > 7 ? (
                                 from dir in Directory.EnumerateDirectories(libProductDir)
                                 let path = Path.Combine(dir, archStr)
                                 where Directory.Exists(path)
                                 select path
-                            ).ToArray()
+                            ).ToArray() :
+                            new string[1] { arch == Architecture.X86 ? libProductDir : Path.Combine(libProductDir, archStr) }
                         );
                         
                         windowsSdk = new WindowsSdk(version, arch, includeDirectories, libPathDirectories);

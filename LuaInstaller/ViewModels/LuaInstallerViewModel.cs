@@ -31,9 +31,6 @@ namespace LuaInstaller.ViewModels
         private string status;
         private InstallationProgress progress;
 
-        private readonly IDictionary<Architecture, Func<VisualStudio[]>> visualStudiosDispatcher;
-        private readonly IDictionary<Architecture, Func<WindowsSdk[]>> windowsSdksDispatcher;
-
         public Architecture Platform
         {
             get
@@ -297,80 +294,46 @@ namespace LuaInstaller.ViewModels
 
             platform = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
 
-            visualStudiosDispatcher = new Dictionary<Architecture, Func<VisualStudio[]>>
-            {
-                { Architecture.X86, () => components.AllVisualStudioX86().ToArray() },
-                { Architecture.X64, () => components.AllVisualStudioX64().ToArray() }
-            };
-
-            windowsSdksDispatcher = new Dictionary<Architecture, Func<WindowsSdk[]>>
-            {
-                { Architecture.X86, () => components.AllWindowsSdkX86().ToArray() },
-                { Architecture.X64, () => components.AllWindowsSdkX64().ToArray() }
-            };
+            IVisualStudioEnumeration vsEnum = components.AllVisualStudioByArch(platform);
 
             visualStudioVersions = new ObservableCollection<VisualStudio>(
-                GetVisualStudios()
+                vsEnum
             );
 
-            if (visualStudioVersions.Count > 0)
-            {
-                selectedVisualStudioVersion = visualStudioVersions[0];
-            }
+            vsEnum.TryGetLatest(out selectedVisualStudioVersion);
+
+            IWindowsSdkEnumeration windowsSdkEnum = components.AllWindowsSdkByArch(platform);
 
             winSdkVersions = new ObservableCollection<WindowsSdk>(
-                GetWindowsSdks()
+                windowsSdkEnum
             );
 
-            if (winSdkVersions.Count > 0)
-            {
-                selectedWinSdkVersion = winSdkVersions[0];
-            }
-        }
-
-        private VisualStudio[] GetVisualStudios()
-        {
-            return visualStudiosDispatcher[platform]();
-        }
-
-        private WindowsSdk[] GetWindowsSdks()
-        {
-            return windowsSdksDispatcher[platform]();
+            windowsSdkEnum.TryGetLatest(out selectedWinSdkVersion);
         }
 
         private void ChangePlatform()
         {
             visualStudioVersions.Clear();
-            VisualStudio[] vsList = GetVisualStudios();
-            foreach (VisualStudio vs in vsList)
+            IVisualStudioEnumeration vsEnum = components.AllVisualStudioByArch(platform);
+            foreach (VisualStudio vs in vsEnum)
             {
                 visualStudioVersions.Add(vs);
             }
 
-            if (visualStudioVersions.Count > 0)
-            {
-                SelectedVisualStudioVersion = visualStudioVersions[0];
-            }
-            else
-            {
-                SelectedVisualStudioVersion = null;
-            }
+            VisualStudio latestVs;
+            vsEnum.TryGetLatest(out latestVs);
+            SelectedVisualStudioVersion = latestVs;
 
             winSdkVersions.Clear();
-            WindowsSdk[] winSdkList = GetWindowsSdks();
-            foreach (WindowsSdk sdk in winSdkList)
+            IWindowsSdkEnumeration windowsSdksEnum = components.AllWindowsSdkByArch(platform);
+            foreach (WindowsSdk sdk in windowsSdksEnum)
             {
                 winSdkVersions.Add(sdk);
             }
 
-            if (winSdkVersions.Count > 0)
-            {
-                SelectedWinSdkVersion = winSdkVersions[0];
-            }
-            else
-            {
-                SelectedWinSdkVersion = null;
-            }
+            WindowsSdk latestSdk;
+            windowsSdksEnum.TryGetLatest(out latestSdk);
+            SelectedWinSdkVersion = latestSdk;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

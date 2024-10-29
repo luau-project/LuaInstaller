@@ -54,7 +54,7 @@ foreach (WindowsSdk sdk in components.AllWindowsSdkX64())
 }
 ```
 
-### Perform a x64 build of Lua
+### Perform a download, build and install of Lua (x64)
 
 ```cs
 LuaVersion luaVersion = ...; /* query as above */
@@ -87,5 +87,5 @@ manager.InstallationProgressChanged += (sender, e) =>
 // on a background worker thread
 // (System.ComponentModel.BackgroundWorker),
 // and listen to progress changes.
-manager.Build(luaVersion, "C:\\Lua", vs, winSdk, env);
+manager.ExecuteInstall(luaVersion, "C:\\Lua", vs, sdk, env);
 ```

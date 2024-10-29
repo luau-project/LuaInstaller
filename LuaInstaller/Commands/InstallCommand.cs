@@ -252,7 +252,7 @@ namespace LuaInstaller.Commands
                     variableTarget = viewModel.VariableTarget;
                 }
 
-                manager.Build(viewModel.SelectedLuaVersion, viewModel.DestinationDir, viewModel.SelectedVisualStudioVersion, viewModel.SelectedWinSdkVersion, variableTarget);
+                manager.ExecuteInstall(viewModel.SelectedLuaVersion, viewModel.DestinationDir, viewModel.SelectedVisualStudioVersion, viewModel.SelectedWinSdkVersion, variableTarget);
                 e.Result = viewModel;
             }
             catch (Exception ex)

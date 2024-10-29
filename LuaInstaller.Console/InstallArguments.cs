@@ -215,66 +215,19 @@ namespace LuaInstaller.Console
             {
                 arch = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
             }
-            else
+            else if (!Enum.TryParse(archArg.ToUpperInvariant(), out arch))
             {
-                if (!Enum.TryParse(archArg.ToUpperInvariant(), out arch))
-                {
-                    throw new InvalidOptionValueException("Unknown architecture");
-                }
+                throw new InvalidOptionValueException("Unknown architecture");
             }
 
             switch (arch)
             {
                 case Architecture.X86:
-                    {
-                        if (vsVer == null)
-                        {
-                            vs = components.AllVisualStudioX86().FirstOrDefault();
-                        }
-                        else
-                        {
-                            Match vsVerMatch = majorMinorRgx.Match(vsVer);
-                            if (vsVerMatch.Success)
-                            {
-                                GroupCollection groups = vsVerMatch.Groups;
-                                int major = int.Parse(groups[1].Value);
-                                int minor = int.Parse(groups[2].Value);
-
-                                vs = components.AllVisualStudioX86().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
-                            }
-                            else
-                            {
-                                vs = components.AllVisualStudioX86().FirstOrDefault(v => v.Version.ToString() == vsVer);
-                            }
-                        }
-
-                        if (winsdkVer == null)
-                        {
-                            winsdk = components.AllWindowsSdkX86().FirstOrDefault();
-                        }
-                        else
-                        {
-                            Match winSdkMatch = majorMinorRgx.Match(winsdkVer);
-                            if (winSdkMatch.Success)
-                            {
-                                GroupCollection groups = winSdkMatch.Groups;
-                                int major = int.Parse(groups[1].Value);
-                                int minor = int.Parse(groups[2].Value);
-
-                                winsdk = components.AllWindowsSdkX86().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
-                            }
-                            else
-                            {
-                                winsdk = components.AllWindowsSdkX86().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
-                            }
-                        }
-                    }
-                    break;
                 case Architecture.X64:
                     {
                         if (vsVer == null)
                         {
-                            vs = components.AllVisualStudioX64().FirstOrDefault();
+                            components.AllVisualStudioByArch(arch).TryGetLatest(out vs);
                         }
                         else
                         {
@@ -284,18 +237,18 @@ namespace LuaInstaller.Console
                                 GroupCollection groups = vsVerMatch.Groups;
                                 int major = int.Parse(groups[1].Value);
                                 int minor = int.Parse(groups[2].Value);
-                                
-                                vs = components.AllVisualStudioX64().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+
+                                vs = components.AllVisualStudioByArch(arch).FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
                             }
                             else
                             {
-                                vs = components.AllVisualStudioX64().FirstOrDefault(v => v.Version.ToString() == vsVer);
+                                vs = components.AllVisualStudioByArch(arch).FirstOrDefault(v => v.Version.ToString() == vsVer);
                             }
                         }
 
                         if (winsdkVer == null)
                         {
-                            winsdk = components.AllWindowsSdkX64().FirstOrDefault();
+                            components.AllWindowsSdkByArch(arch).TryGetLatest(out winsdk);
                         }
                         else
                         {
@@ -306,11 +259,11 @@ namespace LuaInstaller.Console
                                 int major = int.Parse(groups[1].Value);
                                 int minor = int.Parse(groups[2].Value);
 
-                                winsdk = components.AllWindowsSdkX64().FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
+                                winsdk = components.AllWindowsSdkByArch(arch).FirstOrDefault(v => v.Version.Major == major && v.Version.Minor == minor);
                             }
                             else
                             {
-                                winsdk = components.AllWindowsSdkX64().FirstOrDefault(v => v.Version.ToString() == winsdkVer);
+                                winsdk = components.AllWindowsSdkByArch(arch).FirstOrDefault(v => v.Version.ToString() == winsdkVer);
                             }
                         }
                     }

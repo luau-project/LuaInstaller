@@ -22,8 +22,11 @@ LuaInstaller.Console.exe list-vs-x64
     Lists all MSVC x64 toolset
     compilers found
 
-LuaInstaller.Console.exe list-win-sdk
-    Lists all Windows SDK found
+LuaInstaller.Console.exe list-win-sdk-x86
+    Lists all Windows SDK x86 found
+
+LuaInstaller.Console.exe list-win-sdk-x64
+    Lists all Windows SDK x64 found
 ```
 
 ### List Lua versions installable by these tools
@@ -32,16 +35,28 @@ LuaInstaller.Console.exe list-win-sdk
 LuaInstaller.Console.exe list-lua
 ```
 
-### List Visual C++ versions installed in the system for x86 compilation
+### List MSVC versions installed in the system for x86 compilation
 
 ```
 LuaInstaller.Console.exe list-vs-x86
 ```
 
-### List Visual C++ versions installed in the system for x64 compilation
+### List MSVC versions installed in the system for x64 compilation
 
 ```
 LuaInstaller.Console.exe list-vs-x64
+```
+
+### List Windows SDK versions installed in the system for x86 compilation
+
+```
+LuaInstaller.Console.exe list-win-sdk-x86
+```
+
+### List Windows SDK versions installed in the system for x64 compilation
+
+```
+LuaInstaller.Console.exe list-win-sdk-x64
 ```
 
 ## Installation

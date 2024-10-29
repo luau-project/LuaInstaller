@@ -8,7 +8,7 @@ on:
         type: string
 
 env:
-  LUAINSTALLER_VERSION: 0.3.0.0
+  LUAINSTALLER_VERSION: 0.4.0.0
 
 jobs:
   release:
@@ -23,7 +23,7 @@ jobs:
           if (-not ($allowed_archs -contains "${{ inputs.arch }}"))
           {
             Write-Host "Arch not found";
-            exit /B 1;
+            exit 1;
           }
 
       - name: Checkout LuaInstaller

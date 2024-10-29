@@ -32,8 +32,11 @@ LuaInstaller.Console.exe list-vs-x64
     Lists all MSVC x64 toolset
     compilers found
 
-LuaInstaller.Console.exe list-win-sdk
-    Lists all Windows SDK found
+LuaInstaller.Console.exe list-win-sdk-x86
+    Lists all Windows SDK x86 found
+
+LuaInstaller.Console.exe list-win-sdk-x64
+    Lists all Windows SDK x64 found
 
 ------------------------------------------------------
 Installation
@@ -109,11 +112,10 @@ requires 'Administrator' privileges, so you must
 ");
         }
         
-        private static int Install(string[] args)
+        private static int Install(string[] args, out InstallArguments installArgs)
         {
             int result = 0;
-
-            InstallArguments installArgs = new InstallArguments(new InstalledComponents());
+            installArgs = new InstallArguments(new InstalledComponents());
             try
             {
                 installArgs.Process(args, 1);
@@ -123,16 +125,18 @@ requires 'Administrator' privileges, so you must
 
                 InstallationManager manager = new InstallationManager(compiler, linker);
 
-                manager.Build(installArgs.Version, installArgs.OutDir, installArgs.Vs, installArgs.Winsdk, installArgs.VariableTarget);
+                manager.ExecuteInstall(installArgs.Version, installArgs.OutDir, installArgs.Vs, installArgs.Winsdk, installArgs.VariableTarget);
             }
             catch (CliArgumentsException ex)
             {
                 Write("Argument error: " + ex.Message);
+                installArgs = null;
                 result = 3;
             }
             catch (Exception ex)
             {
                 Write(ex.Message);
+                installArgs = null;
                 result = 2;
             }
 
@@ -144,6 +148,7 @@ requires 'Administrator' privileges, so you must
             int result = 0;
             int nargs = args.Length;
             bool installed = false;
+            InstallArguments installArgs = null;
 
             if (nargs == 0)
             {
@@ -170,7 +175,6 @@ requires 'Administrator' privileges, so you must
                             }
                             break;
                         }
-                    case "list-vs":
                     case "list-vs-x86":
                         {
                             IInstalledComponents components = new InstalledComponents();
@@ -191,19 +195,29 @@ requires 'Administrator' privileges, so you must
                             }
                             break;
                         }
-                    case "list-win-sdk":
+                    case "list-win-sdk-x86":
                         {
                             IInstalledComponents components = new InstalledComponents();
 
-                            foreach (WindowsSdk vs in components.AllWindowsSdkX86())
+                            foreach (WindowsSdk sdk in components.AllWindowsSdkX86())
                             {
-                                Write(vs.Version.ToString());
+                                Write(sdk.Version.ToString());
+                            }
+                            break;
+                        }
+                    case "list-win-sdk-x64":
+                        {
+                            IInstalledComponents components = new InstalledComponents();
+
+                            foreach (WindowsSdk sdk in components.AllWindowsSdkX64())
+                            {
+                                Write(sdk.Version.ToString());
                             }
                             break;
                         }
                     case "install":
                         {
-                            result = Install(args);
+                            result = Install(args, out installArgs);
                             installed = result == 0;
                             break;
                         }
@@ -223,7 +237,7 @@ requires 'Administrator' privileges, so you must
                 {
                     case "install":
                         {
-                            result = Install(args);
+                            result = Install(args, out installArgs);
                             installed = result == 0;
                             break;
                         }
@@ -239,6 +253,11 @@ requires 'Administrator' privileges, so you must
             if (installed)
             {
                 Write("Lua was installed successfully.");
+                Write(string.Format("  Lua version: {0}", installArgs.Version.Version));
+                Write(string.Format("  Architecture: {0}", installArgs.Arch.ToString()));
+                Write(string.Format("  Destination: {0}", installArgs.OutDir));
+                Write(string.Format("  Visual Studio: {0}", installArgs.Vs.Version.ToString()));
+                Write(string.Format("  Windows SDK: {0}", installArgs.Winsdk.Version.ToString()));
             }
 
             return result;

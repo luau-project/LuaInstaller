@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace LuaInstaller.Core
+﻿namespace LuaInstaller.Core
 {
     public interface IInstalledComponents
     {
-        IEnumerable<VisualStudio> AllVisualStudioX86();
-        IEnumerable<WindowsSdk> AllWindowsSdkX86();
+        IVisualStudioEnumeration AllVisualStudioX86();
+        IWindowsSdkEnumeration AllWindowsSdkX86();
 
-        IEnumerable<VisualStudio> AllVisualStudioX64();
-        IEnumerable<WindowsSdk> AllWindowsSdkX64();
+        IVisualStudioEnumeration AllVisualStudioX64();
+        IWindowsSdkEnumeration AllWindowsSdkX64();
+
+        IVisualStudioEnumeration AllVisualStudioByArch(Architecture arch);
+        IWindowsSdkEnumeration AllWindowsSdkByArch(Architecture arch);
     }
 }

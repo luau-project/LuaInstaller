@@ -100,7 +100,7 @@ jobs:
         run: |
           $console = Join-Path "${{ env.CONSOLE_DIR }}" -ChildPath "LuaInstaller.Console.exe";
           
-          $commands = "/?", "list-win-sdk", "list-vs-${{ inputs.arch }}", "list-lua";
+          $commands = "/?", "list-win-sdk-${{ inputs.arch }}", "list-vs-${{ inputs.arch }}", "list-lua";
           $color = (0x1b -as [char]) + "[36m";
 
           foreach ($c in $commands) {

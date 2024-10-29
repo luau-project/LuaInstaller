@@ -23,6 +23,8 @@ namespace LuaInstaller.Core
 
         public string ProductVersion { get { return _productVersion; } }
 
+        public bool HasUniversalCRT { get { return _major >= 10; } }
+
         public WindowsSdkVersion(int major, int minor, string installationDir, string productVersion, int? build = null, int? revision = null)
         {
             if (major < 0)
@@ -78,7 +80,12 @@ namespace LuaInstaller.Core
             if (!(obj == null || GetType() != obj.GetType()))
             {
                 WindowsSdkVersion other = (WindowsSdkVersion)obj;
-                result = _minor == other._minor && _major == other._major && _installationDir == other._installationDir && _productVersion == other._productVersion && _build == other._build && _revision == other._revision;
+                result = _minor == other._minor &&
+                    _major == other._major &&
+                    _installationDir == other._installationDir &&
+                    _productVersion == other._productVersion &&
+                    _build == other._build &&
+                    _revision == other._revision;
             }
 
             return result;
@@ -92,7 +99,9 @@ namespace LuaInstaller.Core
 
         public override string ToString()
         {
-            return _build != null && _build.HasValue && _revision != null && _revision.HasValue ? string.Format("{0}.{1} ({0}.{1}.{2}.{3})", _major, _minor, _build.Value, _revision.Value) : string.Format("{0}.{1} ({2})", _major, _minor, (_major == 8 ? (_minor == 0 ? "win8" : ((_minor == 1) ? "winv6.3" : _productVersion)) : _productVersion));
+            return HasUniversalCRT ?
+                string.Format("{0}.{1} ({0}.{1}.{2}.{3})", _major, _minor, _build.Value, _revision.Value) :
+                string.Format("{0}.{1} ({2})", _major, _minor, _productVersion);
         }
 
         public int CompareTo(WindowsSdkVersion other)
