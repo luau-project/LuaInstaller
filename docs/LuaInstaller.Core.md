@@ -16,7 +16,7 @@ foreach (LuaVersion v in versions)
 }
 ```
 
-### Query the latest version from the website:
+### Query the latest Lua version from the website:
 
 ```cs
 LuaVersion latest;
@@ -30,7 +30,7 @@ else
 }
 ```
 
-### Query all the Visual Studios able to build (x64)
+### Query all the Visual Studio instances with build tools found on your computer (x64)
 
 ```cs
 IInstalledComponents components = new InstalledComponents();
@@ -43,7 +43,7 @@ foreach (VisualStudio vs in components.AllVisualStudioX64())
 }
 ```
 
-### Query all the Windows SDKs able to build (x64)
+### Query all the Windows SDKs found on your computer (x64)
 
 ```cs
 IInstalledComponents components = new InstalledComponents();
@@ -89,3 +89,5 @@ manager.InstallationProgressChanged += (sender, e) =>
 // and listen to progress changes.
 manager.ExecuteInstall(luaVersion, "C:\\Lua", vs, sdk, env);
 ```
+
+[Back to the Docs](../docs/README.md)

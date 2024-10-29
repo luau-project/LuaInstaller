@@ -118,3 +118,5 @@ LuaInstaller.Console.exe install "dest-dir=C:\Program Files (x86)\Lua" version=5
 > 
 > Installs Lua ```5.1.5``` in the ```C:\Program Files (x86)\Lua``` folder and also sets environment variables
 machine-wide.
+
+[Back to the Docs](../docs/README.md)

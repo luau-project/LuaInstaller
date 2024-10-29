@@ -117,6 +117,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
+        
         private void BuildDll(string executionDir, string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
@@ -214,6 +215,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
+
         private void BuildInterpreter(string executionDir, string srcDir, string luaLibPath, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
@@ -307,6 +309,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
+
         private void BuildCompiler(string executionDir, string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
@@ -522,6 +525,7 @@ namespace LuaInstaller.Core
         {
             ExecuteInstall(LuaWebsite.FindVersion(version), luaDestDir, vs, winsdk, variableTarget);
         }
+
         public void ExecuteInstall(LuaVersion version, string luaDestDir, VisualStudio vs, WindowsSdk winsdk, EnvironmentVariableTarget? variableTarget = null)
         {
             string tempPath = Path.GetTempPath();
