@@ -110,6 +110,8 @@ jobs:
             & $console $c;
             Write-Host;
           }
+
+          Write-Host "command: ${color}install";
           
           & $console install `
             "dest-dir=${{ env.LUA_DIR }}" `

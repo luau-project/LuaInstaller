@@ -14,6 +14,11 @@ LuaInstaller.Console.exe list-lua
     Lists all Lua versions that this tool
     is able to build
 
+LuaInstaller.Console.exe list-vs
+    Lists all MSVC compilers found
+    for x64 on 64 Bit Operating
+    Systems or x86 otherwise.
+
 LuaInstaller.Console.exe list-vs-x86
     Lists all MSVC x86 toolset
     compilers found
@@ -21,6 +26,11 @@ LuaInstaller.Console.exe list-vs-x86
 LuaInstaller.Console.exe list-vs-x64
     Lists all MSVC x64 toolset
     compilers found
+
+LuaInstaller.Console.exe list-win-sdk
+    Lists all Windows SDK found
+    for x64 on 64 Bit Operating
+    Systems or x86 otherwise
 
 LuaInstaller.Console.exe list-win-sdk-x86
     Lists all Windows SDK x86 found
