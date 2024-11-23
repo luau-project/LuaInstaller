@@ -27,7 +27,7 @@ jobs:
           if (-not ("${{ inputs.gtk-major-version }}" -match "^(3|4)$"))
           {
             Write-Host "Invalid Lua version (X.Y.Z) expected";
-            exit /B 1;
+            exit 1;
           }
 
       - name: Check lua-version input
@@ -35,7 +35,7 @@ jobs:
           if (-not ("${{ inputs.lua-version }}" -match "^(\d+)\.(\d+)(\.\d+)*$"))
           {
             Write-Host "Invalid Lua version (X.Y.Z) expected";
-            exit /B 1;
+            exit 1;
           }
 
       - name: Download and extract GTK ${{ inputs.gtk-major-version }} prebuilt binaries (MSVC toolset) provided by wingtk

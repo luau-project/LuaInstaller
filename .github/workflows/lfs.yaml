@@ -25,7 +25,7 @@ jobs:
           if (-not ($allowed_archs -contains "${{ inputs.arch }}"))
           {
             Write-Host "Arch not found";
-            exit /B 1;
+            exit 1;
           }
       
       - name: Check lua-version input
@@ -33,7 +33,7 @@ jobs:
           if (-not ("${{ inputs.lua-version }}" -match "^(\d+)\.(\d+)(\.\d+)*$"))
           {
             Write-Host "Invalid Lua version (X.Y.Z) expected";
-            exit /B 1;
+            exit 1;
           }
 
       - name: Checkout
