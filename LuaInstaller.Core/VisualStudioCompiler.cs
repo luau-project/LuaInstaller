@@ -111,7 +111,7 @@ namespace LuaInstaller.Core
             }
 
             string arguments = string.Format(
-                "/c /O2 /W3 {0} {1} {2}",
+                "/nologo /MD /c /O2 /W3 {0} {1} {2}",
                 string.Join(" ", defines.ToArray()),
                 string.Join(" ", _includes.Select(FormatInclude).ToArray()),
                 string.Join(" ", _sourceFiles.Select(FormatSrcFile).ToArray())

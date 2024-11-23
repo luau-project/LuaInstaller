@@ -99,7 +99,7 @@ namespace LuaInstaller.Core
             int result = 1;
             
             string arguments = string.Format(
-                _dll ? "/nologo /MD /DLL \"/OUT:{0}\" {1} {2}" : "/nologo \"/OUT:{0}\" {1} {2}",
+                _dll ? "/nologo /DLL \"/OUT:{0}\" {1} {2}" : "/nologo \"/OUT:{0}\" {1} {2}",
                 _outputFile,
                 string.Join(" ", _libPaths.Select(FormatLibPath).ToArray()),
                 string.Join(" ", _inputFiles.Select(FormatInputFile).ToArray())
