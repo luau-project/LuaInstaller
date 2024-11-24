@@ -15,15 +15,5 @@ namespace LuaInstaller.Core
                 return _luaCompat;
             }
         }
-
-        public void AddDefine(ICompiler compiler)
-        {
-            if (compiler == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            compiler.AddDefine(Value);
-        }
     }
 }

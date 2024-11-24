@@ -5,13 +5,12 @@ using System.Linq;
 
 namespace LuaInstaller.Core
 {
-    public class VisualStudioCompiler : ICompiler
+    public sealed class VisualStudioCompiler : ICompiler
     {
         private string _buildDirectory;
         private readonly string _path;
-        private readonly IDictionary<string, string> _defines;
-        private readonly ICollection<string> _includes;
-        private readonly ICollection<string> _sourceFiles;
+        private readonly ICollection<CompilerOption> _options;
+        private readonly ICollection<CompilerOption> _sourceFiles;
 
         public VisualStudioCompiler(string path)
         {
@@ -21,9 +20,8 @@ namespace LuaInstaller.Core
             }
 
             _path = path;
-            _defines = new Dictionary<string, string>();
-            _includes = new List<string>();
-            _sourceFiles = new List<string>();
+            _options = new List<CompilerOption>();
+            _sourceFiles = new List<CompilerOption>();
         }
 
         public string BuildDirectory
@@ -56,65 +54,54 @@ namespace LuaInstaller.Core
 
         public void AddDefine(string name)
         {
-            AddDefine(name, null);
+            AddCompilerOption(new VisualStudioPreprocessorDefinitionCompilerOption(name));
         }
 
         public void AddDefine(string name, string value)
         {
-            _defines[name] = value;
+            AddCompilerOption(new VisualStudioPreprocessorDefinitionCompilerOption(name, value));
         }
 
         public void AddIncludeDirectory(string path)
         {
-            _includes.Add(path);
+            AddCompilerOption(new VisualStudioIncludeDirectoryCompilerOption(path));
         }
 
         public void AddSourceFile(string path)
         {
-            _sourceFiles.Add(path);
+            AddCompilerOption(new VisualStudioSourceFileCompilerOption(path));
         }
 
-        private static string FormatDefine(KeyValuePair<string, string> keyValue)
+        public void AddCompilerOption(CompilerOption option)
         {
-            string result;
-
-            if (keyValue.Value == null)
+            if (option == null)
             {
-                result = string.Format("\"/D{0}\"", keyValue.Key);
+                throw new ArgumentNullException();
+            }
+
+            if (option is VisualStudioSourceFileCompilerOption)
+            {
+                _sourceFiles.Add(option);
             }
             else
             {
-                result = string.Format("\"/D{0}={1}\"", keyValue.Key, keyValue.Value);
+                _options.Add(option);
             }
-
-            return result;
         }
 
-        private static string FormatInclude(string path)
+        private static string FormatCompilerOption(CompilerOption option)
         {
-            return string.Format("\"/I{0}\"", path);
-        }
-
-        private static string FormatSrcFile(string path)
-        {
-            return string.Format("\"{0}\"", path);
+            return string.Format("\"{0}\"", option.ToString());
         }
 
         public int Execute()
         {
             int result = 1;
 
-            ICollection<string> defines = new List<string>();
-            foreach (KeyValuePair<string, string> keyValue in _defines)
-            {
-                defines.Add(FormatDefine(keyValue));
-            }
-
             string arguments = string.Format(
-                "/nologo /MD /c /O2 /W3 {0} {1} {2}",
-                string.Join(" ", defines.ToArray()),
-                string.Join(" ", _includes.Select(FormatInclude).ToArray()),
-                string.Join(" ", _sourceFiles.Select(FormatSrcFile).ToArray())
+                "{0} {1}",
+                string.Join(" ", _options.Select(FormatCompilerOption).ToArray()),
+                string.Join(" ", _sourceFiles.Select(FormatCompilerOption).ToArray())
             );
 
             ProcessStartInfo compilePsi = new ProcessStartInfo();
@@ -139,8 +126,7 @@ namespace LuaInstaller.Core
         public void Reset()
         {
             _buildDirectory = null;
-            _defines.Clear();
-            _includes.Clear();
+            _options.Clear();
             _sourceFiles.Clear();
         }
     }

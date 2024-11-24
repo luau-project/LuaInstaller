@@ -4,10 +4,10 @@
     {
         string Path { get; }
         string BuildDirectory { get; set; }
-        string OutputFile { get; set; }
-        bool Dll { get; set; }
         void AddLibPath(string path);
         void AddInputFile(string path);
+        void AddLinkerOption(LinkerOption option);
+
         int Execute();
         void Reset();
     }

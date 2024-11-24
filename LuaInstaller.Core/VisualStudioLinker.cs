@@ -5,14 +5,12 @@ using System.Linq;
 
 namespace LuaInstaller.Core
 {
-    public class VisualStudioLinker : ILinker
+    public sealed class VisualStudioLinker : ILinker
     {
         private string _buildDirectory;
-        private string _outputFile;
-        private bool _dll;
         private readonly string _path;
-        private readonly ICollection<string> _libPaths;
-        private readonly ICollection<string> _inputFiles;
+        private readonly ICollection<LinkerOption> _options;
+        private readonly ICollection<LinkerOption> _inputFiles;
 
         public VisualStudioLinker(string path)
         {
@@ -23,8 +21,8 @@ namespace LuaInstaller.Core
 
             _path = path;
 
-            _libPaths = new List<string>();
-            _inputFiles = new List<string>();
+            _options = new List<LinkerOption>();
+            _inputFiles = new List<LinkerOption>();
         }
 
         public string BuildDirectory
@@ -40,32 +38,6 @@ namespace LuaInstaller.Core
             }
         }
 
-        public string OutputFile
-        {
-            get
-            {
-                return _outputFile;
-            }
-
-            set
-            {
-                _outputFile = value;
-            }
-        }
-
-        public bool Dll
-        {
-            get
-            {
-                return _dll;
-            }
-
-            set
-            {
-                _dll = value;
-            }
-        }
-
         public string Path
         {
             get
@@ -74,35 +46,46 @@ namespace LuaInstaller.Core
             }
         }
 
-        private static string FormatInputFile(string path)
+        private static string FormatLinkerOption(LinkerOption option)
         {
-            return string.Format("\"{0}\"", path);
+            return string.Format("\"{0}\"", option.ToString());
         }
 
         public void AddInputFile(string path)
         {
-            _inputFiles.Add(path);
-        }
-
-        private static string FormatLibPath(string path)
-        {
-            return string.Format("\"/LIBPATH:{0}\"", path);
+            AddLinkerOption(new VisualStudioInputFileLinkerOption(path));
         }
 
         public void AddLibPath(string path)
         {
-            _libPaths.Add(path);
+            AddLinkerOption(new VisualStudioLibraryDirectoryLinkerOption(path));
+        }
+
+        public void AddLinkerOption(LinkerOption option)
+        {
+            if (option == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (option is VisualStudioInputFileLinkerOption)
+            {
+                _inputFiles.Add(option);
+            }
+            else
+            {
+                _options.Add(option);
+            }
         }
 
         public int Execute()
         {
             int result = 1;
-            
+
             string arguments = string.Format(
-                _dll ? "/nologo /DLL \"/OUT:{0}\" {1} {2}" : "/nologo \"/OUT:{0}\" {1} {2}",
-                _outputFile,
-                string.Join(" ", _libPaths.Select(FormatLibPath).ToArray()),
-                string.Join(" ", _inputFiles.Select(FormatInputFile).ToArray())
+                "{0} {1}",
+                string.Join(" ", _options.Select(FormatLinkerOption).ToArray()),
+                string.Join(" ", _inputFiles.Select(FormatLinkerOption).ToArray())
             );
 
             ProcessStartInfo linkPsi = new ProcessStartInfo();
@@ -127,9 +110,7 @@ namespace LuaInstaller.Core
         public void Reset()
         {
             _buildDirectory = null;
-            _dll = false;
-            _outputFile = null;
-            _libPaths.Clear();
+            _options.Clear();
             _inputFiles.Clear();
         }
     }

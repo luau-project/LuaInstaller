@@ -9,6 +9,7 @@
         void AddDefine(string name, string value);
         void AddIncludeDirectory(string path);
         void AddSourceFile(string path);
+        void AddCompilerOption(CompilerOption option);
         int Execute();
         void Reset();
     }

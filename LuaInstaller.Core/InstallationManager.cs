@@ -37,6 +37,39 @@ namespace LuaInstaller.Core
             _objExtension = _compiler.DefaultObjectExtension;
         }
 
+        private void SetupCompilerSharedConfiguration()
+        {
+            if (_compiler is VisualStudioCompiler)
+            {
+                // /nologo
+                _compiler.AddCompilerOption(new VisualStudioSuppressStartupBannerCompilerOption());
+
+                // /c
+                _compiler.AddCompilerOption(new VisualStudioCompileOnlyCompilerOption());
+
+                // /MD
+                _compiler.AddCompilerOption(new VisualStudioMultithreadedDLLRuntimeLibraryCompilerOption(false));
+                
+                // /O2
+                _compiler.AddCompilerOption(new VisualStudioO2CompilerOption());
+                
+                // /W3
+                _compiler.AddCompilerOption(new VisualStudioW3CompilerOption());
+
+                // /D_CRT_SECURE_NO_DEPRECATE
+                _compiler.AddDefine("_CRT_SECURE_NO_DEPRECATE");
+            }
+        }
+
+        private void SetupLinkerSharedConfiguration()
+        {
+            if (_linker is VisualStudioLinker)
+            {
+                // /nologo
+                _linker.AddLinkerOption(new  VisualStudioSuppressStartupBannerLinkerOption());
+            }
+        }
+
         private AbstractLuaCompatibility GetLuaCompatibility(string srcDir)
         {
             bool result = false;
@@ -85,9 +118,15 @@ namespace LuaInstaller.Core
         {
             try
             {
+                SetupLinkerSharedConfiguration();
+
                 _linker.BuildDirectory = srcDir;
-                _linker.OutputFile = outputFile;
-                _linker.Dll = true;
+
+                if (_linker is VisualStudioLinker)
+                {
+                    _linker.AddLinkerOption(new VisualStudioOutputFileLinkerOption(outputFile));
+                    _linker.AddLinkerOption(new VisualStudioDLLLinkerOption());
+                }
 
                 foreach (string libPath in vs.LibPathDirectories)
                 {
@@ -126,6 +165,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                SetupCompilerSharedConfiguration();
+
                 luaCompat.TryAddDefine(_compiler);
 
                 _compiler.AddDefine("LUA_BUILD_AS_DLL");
@@ -153,7 +194,7 @@ namespace LuaInstaller.Core
                 
                 if (_compiler.Execute() == 0)
                 {
-                    OnInstallationProgressChanged(Core.InstallationProgress.CompileDll);
+                    OnInstallationProgressChanged(InstallationProgress.CompileDll);
 
                     LinkDll(buildDir, outputFile, vs, winsdk);
                 }
@@ -187,8 +228,14 @@ namespace LuaInstaller.Core
         {
             try
             {
+                SetupLinkerSharedConfiguration();
+
                 _linker.BuildDirectory = srcDir;
-                _linker.OutputFile = outputFile;
+
+                if (_linker is VisualStudioLinker)
+                {
+                    _linker.AddLinkerOption(new VisualStudioOutputFileLinkerOption(outputFile));
+                }
 
                 foreach (string libPath in vs.LibPathDirectories)
                 {
@@ -208,7 +255,7 @@ namespace LuaInstaller.Core
                     throw new LinkInterpreterException();
                 }
 
-                OnInstallationProgressChanged(Core.InstallationProgress.LinkInterpreter);
+                OnInstallationProgressChanged(InstallationProgress.LinkInterpreter);
             }
             finally
             {
@@ -224,6 +271,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                SetupCompilerSharedConfiguration();
+
                 luaCompat.TryAddDefine(_compiler);
 
                 foreach (string inc in vs.IncludeDirectories)
@@ -245,7 +294,7 @@ namespace LuaInstaller.Core
                 
                 if (_compiler.Execute() == 0)
                 {
-                    OnInstallationProgressChanged(Core.InstallationProgress.CompileInterpreter);
+                    OnInstallationProgressChanged(InstallationProgress.CompileInterpreter);
                     LinkInterpreter(buildDir, luaLibPath, outputFile, vs, winsdk);
                 }
                 else
@@ -278,8 +327,14 @@ namespace LuaInstaller.Core
         {
             try
             {
+                SetupLinkerSharedConfiguration();
+
                 _linker.BuildDirectory = srcDir;
-                _linker.OutputFile = outputFile;
+
+                if (_linker is VisualStudioLinker)
+                {
+                    _linker.AddLinkerOption(new VisualStudioOutputFileLinkerOption(outputFile));
+                }
 
                 foreach (string libPath in vs.LibPathDirectories)
                 {
@@ -318,6 +373,8 @@ namespace LuaInstaller.Core
 
             try
             {
+                SetupCompilerSharedConfiguration();
+
                 luaCompat.TryAddDefine(_compiler);
 
                 foreach (string inc in vs.IncludeDirectories)
@@ -343,7 +400,7 @@ namespace LuaInstaller.Core
 
                 if (_compiler.Execute() == 0)
                 {
-                    OnInstallationProgressChanged(Core.InstallationProgress.CompileCompiler);
+                    OnInstallationProgressChanged(InstallationProgress.CompileCompiler);
                     LinkCompiler(buildDir, outputFile, vs, winsdk);
                 }
                 else
@@ -558,7 +615,7 @@ namespace LuaInstaller.Core
                 Directory.CreateDirectory(luaWorkDir);
 
                 string luaSourcesDir = LuaWebsite.DownloadAndExtract(luaDownloadDir, luaExtractionDir, version);
-                OnInstallationProgressChanged(Core.InstallationProgress.Download);
+                OnInstallationProgressChanged(InstallationProgress.Download);
 
                 LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(luaSourcesDir);
                 LuaDestinationDirectory workDir = new LuaDestinationDirectory(luaWorkDir);
