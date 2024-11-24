@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:LuaInstaller.ViewModels"
         xmlns:converters="clr-namespace:LuaInstaller.Converters"
         mc:Ignorable="d"
-        Title="Lua Installer" Height="350" Width="525">
+        Title="Lua Installer" Width="550" Height="450" MinWidth="550" MinHeight="450">
     <Window.Resources>
         <vm:LuaInstallerViewModel x:Key="viewModel"/>
         <converters:ArchitectureConverter x:Key="archConverter"/>
@@ -28,25 +28,47 @@
             </StatusBarItem>
         </StatusBar>
 
+        <Expander DockPanel.Dock="Bottom" Margin="20,0" Padding="0,20,0,0">
+            <Expander.Header>Installer information</Expander.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0" Grid.Row="0" Content="Version"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding InstallerVersion}" VerticalAlignment="Center" />
+            
+                <Label Grid.Column="0" Grid.Row="2" Content="Website"/>
+                <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="True" VerticalContentAlignment="Center" Text="https://github.com/luau-project/LuaInstaller"/>
+            </Grid>
+        </Expander>
+
         <Grid IsEnabled="{Binding InstallCommand.NotInstalling, Source={StaticResource viewModel}}" Margin="20,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Column="0" Grid.Row="0" Content="Platform"/>
@@ -87,14 +109,17 @@
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
 			</ComboBox>
-			
-			<CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}"/>
 
-            <StackPanel IsEnabled="{Binding SetEnvironmentVariables}" Grid.Column="1" Grid.Row="12" Orientation="Horizontal">
+            <CheckBox Grid.Column="1" Grid.Row="10" VerticalContentAlignment="Center" Content="Set environment variables" IsChecked="{Binding SetEnvironmentVariables}" ToolTipService.InitialShowDelay="200" Margin="0,5,0,0">
+                <CheckBox.ToolTip>
+                    <TextBlock Text="To set environment variables, you must &quot;Run as Administrator&quot;"/>
+                </CheckBox.ToolTip>
+            </CheckBox>
+
+            <StackPanel IsEnabled="{Binding SetEnvironmentVariables}" Grid.Column="1" Grid.Row="12" Orientation="Horizontal" Margin="0,5">
                 <RadioButton Margin="20,0,10,0" Content="User" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=User}"/>
                 <RadioButton Content="Machine" IsChecked="{Binding VariableTarget, Converter={StaticResource varTargetConverter}, ConverterParameter=Machine}"/>
             </StackPanel>
-			
         </Grid>
         
     </DockPanel>

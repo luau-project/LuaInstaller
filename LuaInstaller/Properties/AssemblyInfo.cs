@@ -8,8 +8,8 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("LuaInstaller")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyDescription("Easy way to download, build and install Lua on Windows.")]
+[assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("luau-project")]
 [assembly: AssemblyProduct("LuaInstaller")]
 [assembly: AssemblyCopyright("Copyright © 2017 - 2024 luau-project")]

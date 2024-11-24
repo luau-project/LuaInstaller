@@ -1,11 +1,11 @@
 ﻿using LuaInstaller.Commands;
 using LuaInstaller.Core;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 
 namespace LuaInstaller.ViewModels
 {
@@ -263,6 +263,16 @@ namespace LuaInstaller.ViewModels
                     variableTarget = value;
                     OnPropertyChanged("VariableTarget");
                 }
+            }
+        }
+
+        public string InstallerVersion
+        {
+            get
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                FileVersionInfo assemblyInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+                return assemblyInfo.FileVersion;
             }
         }
 

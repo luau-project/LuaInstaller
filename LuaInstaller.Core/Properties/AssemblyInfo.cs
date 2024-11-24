@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("LuaInstaller.Core")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyDescription("A library to ease the task to download, build and install Lua on Windows.")]
+[assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("luau-project")]
 [assembly: AssemblyProduct("LuaInstaller.Core")]
 [assembly: AssemblyCopyright("Copyright © 2017 - 2024 luau-project")]

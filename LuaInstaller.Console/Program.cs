@@ -1,10 +1,30 @@
 ﻿using LuaInstaller.Core;
 using System;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace LuaInstaller.Console
 {
     class Program
     {
+        private static string InstallerVersion
+        {
+            get
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                FileVersionInfo assemblyInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+                return assemblyInfo.FileVersion;
+            }
+        }
+
+        private static string InstallerWebsite
+        {
+            get
+            {
+                return "https://github.com/luau-project/LuaInstaller";
+            }
+        }
+
         private static void Write(string msg)
         {
             System.Console.WriteLine(msg);
@@ -19,6 +39,12 @@ Information
 
 LuaInstaller.Console.exe [ /? | help ]
     Displays this help message
+
+LuaInstaller.Console.exe [ -v | --version ]
+    Displays the version of the installer
+
+LuaInstaller.Console.exe help-website
+    Displays the website of the installer
 
 LuaInstaller.Console.exe list-lua
     Lists all Lua versions that this tool
@@ -98,12 +124,12 @@ code for x64 on 64 Bit Operating Systems or x86 otherwise.
 
     LuaInstaller.Console.exe install
 
-2) Installs Lua 5.3.6 in the current directory,
+2) Installs Lua 5.4.7 in the current directory,
 using the latest versions of Visual Studio and
 Windows SDK, building the source code for x64
 platforms
 
-    LuaInstaller.Console.exe install version=5.3.6 arch=x64
+    LuaInstaller.Console.exe install version=5.4.7 arch=x64
 
 3) Installs Lua 5.1.5 in the folder
 'C:\Program Files (x86)\Lua',
@@ -175,6 +201,17 @@ requires 'Administrator' privileges, so you must
                         {
                             Help();
 
+                            break;
+                        }
+                    case "help-website":
+                        {
+                            Write(InstallerWebsite);
+                            break;
+                        }
+                    case "-v":
+                    case "--version":
+                        {
+                            Write(InstallerVersion);
                             break;
                         }
                     case "list-lua":
@@ -284,12 +321,15 @@ requires 'Administrator' privileges, so you must
             
             if (installed)
             {
-                Write("Lua was installed successfully.");
+                Write("Lua was installed successfully:");
                 Write(string.Format("  Lua version: {0}", installArgs.Version.Version));
                 Write(string.Format("  Architecture: {0}", installArgs.Arch.ToString()));
                 Write(string.Format("  Destination: {0}", installArgs.OutDir));
                 Write(string.Format("  Visual Studio: {0}", installArgs.Vs.Version.ToString()));
                 Write(string.Format("  Windows SDK: {0}", installArgs.Winsdk.Version.ToString()));
+                Write("LuaInstaller.Console:");
+                Write(string.Format("  Version: {0}", InstallerVersion));
+                Write(string.Format("  Website: {0}", InstallerWebsite));
             }
 
             return result;
