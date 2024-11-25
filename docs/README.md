@@ -8,6 +8,8 @@ Did you get here by a mistake? Back to the project's [home page](../).
 
 ## Developers
 
+Are you looking for CI / CD content? [check our CI examples here](./UsageCI.md).
+
 > [!IMPORTANT]
 > 
 > Before you try to use the tools and libraries provided here, be sure to perform the [initial setup](../README.md#setup).
