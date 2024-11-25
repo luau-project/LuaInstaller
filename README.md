@@ -47,7 +47,7 @@ The toolset available here aids the process to download, build and install Lua v
 
 2. If everything was configured correctly, you should see each dropdown with at least one choice available:
 
-![running](https://github.com/user-attachments/assets/20038d77-33e3-47e7-aca4-06e9c09514eb)
+![running](https://github.com/user-attachments/assets/fb93a3e2-6bda-4dad-b56e-01c86ecdd6e8)
 
 3. Make your choices and hit ```Install```;
 4. Verify that you can find ```lua.exe``` at ```FOLDER > bin```, where FOLDER means the destination directory for Lua installation.
