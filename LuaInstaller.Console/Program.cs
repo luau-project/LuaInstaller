@@ -152,6 +152,7 @@ requires 'Administrator' privileges, so you must
         {
             int result = 0;
             installArgs = new InstallArguments(new InstalledComponents());
+            
             try
             {
                 installArgs.Process(args, 1);
