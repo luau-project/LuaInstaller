@@ -8,7 +8,11 @@ Did you get here by a mistake? Back to the project's [home page](../).
 
 ## Developers
 
+### Usage on CI servers
+
 Are you looking for CI / CD content? [check our CI examples here](./UsageCI.md).
+
+### Informations and general usage
 
 > [!IMPORTANT]
 > 

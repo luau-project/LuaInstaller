@@ -1,8 +1,8 @@
-# Usage in CI servers
+# Usage on CI servers
 
 ## Overview
 
-By the use of ```LuaInstaller.Console```, you can setup continuous integration / continuous delivery (CI CD) to buid and test your Lua-related project on Windows against the MSVC toolchain.
+By the use of ```LuaInstaller.Console```, you can setup continuous integration / continuous delivery (CI, CD) to buid and test your Lua-related project on Windows against the MSVC toolchain.
 
 ## Table of Contents
 
