@@ -56,6 +56,7 @@ jobs:
           }
       
       - name: Sanity check the architecture
+        shell: pwsh
         run: |
           if (-not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
           {
@@ -164,6 +165,7 @@ jobs:
           }
       
       - name: Sanity check the architecture
+        shell: pwsh
         run: |
           if (-not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
           {
