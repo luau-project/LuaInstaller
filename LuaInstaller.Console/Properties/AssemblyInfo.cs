@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("luau-project")]
 [assembly: AssemblyProduct("LuaInstaller.Console")]
-[assembly: AssemblyCopyright("Copyright © 2017 - 2024 luau-project")]
+[assembly: AssemblyCopyright("Copyright © 2017 - 2025 luau-project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.1.0")]
-[assembly: AssemblyFileVersion("0.5.1.0")]
+[assembly: AssemblyVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.0.0")]
