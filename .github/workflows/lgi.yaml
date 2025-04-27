@@ -13,7 +13,7 @@ on:
 
 env:
   ARCH: x64
-  WINGTK_URL: https://github.com/wingtk/gvsbuild/releases/download/2025.10.0/GTK${{ inputs.gtk-major-version }}_Gvsbuild_2025.10.0_x64.zip
+  WINGTK_URL: https://github.com/wingtk/gvsbuild/releases/download/2025.4.1/GTK${{ inputs.gtk-major-version }}_Gvsbuild_2025.4.1_x64.zip
   
 jobs:
   build:
