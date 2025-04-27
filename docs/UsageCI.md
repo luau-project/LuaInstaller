@@ -23,7 +23,7 @@ name: Setup Lua
 on: [push, pull_request]
 
 env:
-  LUAINSTALLER_VERSION: 0.5.0.0
+  LUAINSTALLER_VERSION: 0.5.1.0
 
 jobs:
 
@@ -131,7 +131,7 @@ name: Setup Lua and LuaRocks
 on: [push, pull_request]
 
 env:
-  LUAINSTALLER_VERSION: 0.5.0.0
+  LUAINSTALLER_VERSION: 0.5.1.0
   LUAROCKS_VERSION: 3.11.1
 
 jobs:
