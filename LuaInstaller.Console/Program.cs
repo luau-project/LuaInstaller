@@ -37,7 +37,7 @@ namespace LuaInstaller.Console
 Information
 ------------------------------------------------------
 
-LuaInstaller.Console.exe [ /? | help ]
+LuaInstaller.Console.exe [ /? | help | -h | --help ]
     Displays this help message
 
 LuaInstaller.Console.exe [ -v | --version ]
@@ -52,8 +52,9 @@ LuaInstaller.Console.exe list-lua
 
 LuaInstaller.Console.exe list-vs
     Lists all MSVC compilers found
-    for x64 on 64 Bit Operating
-    Systems or x86 otherwise.
+    matching the architecture
+    (x86, x64 or ARM64) of the
+    Operating System
 
 LuaInstaller.Console.exe list-vs-x86
     Lists all MSVC x86 toolset
@@ -63,16 +64,24 @@ LuaInstaller.Console.exe list-vs-x64
     Lists all MSVC x64 toolset
     compilers found
 
+LuaInstaller.Console.exe list-vs-arm64
+    Lists all MSVC ARM64 toolset
+    compilers found
+
 LuaInstaller.Console.exe list-win-sdk
     Lists all Windows SDK found
-    for x64 on 64 Bit Operating
-    Systems or x86 otherwise
+    matching the architecture
+    (x86, x64 or ARM64) of the
+    Operating System
 
 LuaInstaller.Console.exe list-win-sdk-x86
     Lists all Windows SDK x86 found
 
 LuaInstaller.Console.exe list-win-sdk-x64
     Lists all Windows SDK x64 found
+
+LuaInstaller.Console.exe list-win-sdk-arm64
+    Lists all Windows SDK ARM64 found
 
 ------------------------------------------------------
 Installation
@@ -89,11 +98,12 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
         Lua version to install
         e.g.: installs Lua 5.1.5
 
-    arch=[ x86 | X86 | x64 | X64 ]
+    arch=[ x86 | X86 | x64 | X64 | arm64 | ARM64 ]
         Generates machine code for the
         specified platform
-        Defaults to x64 on 64 Bit Operating
-        Systems or x86 otherwise.
+        Defaults to the architecture
+        (x86, x64 or ARM64) of the
+        Operating System.
 
     vs=14.0
         Uses a specific version of the
@@ -119,24 +129,26 @@ Examples
 
 1) Installs the latest Lua available on Lua's website
 in the current directory, using the latest versions
-of Visual Studio and Windows SDK, building the source
-code for x64 on 64 Bit Operating Systems or x86 otherwise.
+of Visual Studio and Windows SDK, building the
+source code matching the architecture (x86, x64 or ARM64)
+of the Operating System:
 
     LuaInstaller.Console.exe install
 
 2) Installs Lua 5.4.7 in the current directory,
 using the latest versions of Visual Studio and
 Windows SDK, building the source code for x64
-platforms
+platforms:
 
     LuaInstaller.Console.exe install version=5.4.7 arch=x64
 
 3) Installs Lua 5.1.5 in the folder
 'C:\Program Files (x86)\Lua',
 using the latest versions of Visual Studio and
-Windows SDK, building the source code for x64
-on 64 Bit Operating Systems or x86 otherwise.
-Also sets environment variables machine-wide
+Windows SDK, building the source code matching
+the architecture (x86, x64 or ARM64) of the
+Operating System. Also sets environment variables
+machine-wide.
 
 ------------------------------------------------------
 Remark: This kind of machine-wide installation usually
@@ -199,6 +211,8 @@ requires 'Administrator' privileges, so you must
                 {
                     case "/?":
                     case "help":
+                    case "-h":
+                    case "--help":
                         {
                             Help();
 
@@ -254,6 +268,16 @@ requires 'Administrator' privileges, so you must
                             }
                             break;
                         }
+                    case "list-vs-arm64":
+                        {
+                            IInstalledComponents components = new InstalledComponents();
+
+                            foreach (VisualStudio vs in components.AllVisualStudioARM64())
+                            {
+                                Write(vs.Version.ToString());
+                            }
+                            break;
+                        }
                     case "list-win-sdk":
                         {
                             IInstalledComponents components = new InstalledComponents();
@@ -280,6 +304,16 @@ requires 'Administrator' privileges, so you must
                             IInstalledComponents components = new InstalledComponents();
 
                             foreach (WindowsSdk sdk in components.AllWindowsSdkX64())
+                            {
+                                Write(sdk.Version.ToString());
+                            }
+                            break;
+                        }
+                    case "list-win-sdk-arm64":
+                        {
+                            IInstalledComponents components = new InstalledComponents();
+
+                            foreach (WindowsSdk sdk in components.AllWindowsSdkARM64())
                             {
                                 Write(sdk.Version.ToString());
                             }
