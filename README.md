@@ -76,6 +76,8 @@ The toolset available here aids in the process to download, build and install Lu
    LuaInstaller.Console.exe install "version=5.4.7" "dest-dir=C:\Lua-5.4.7"
    ```
 
+   ![running-from-cmd](https://github.com/user-attachments/assets/eaf0f4cf-7dd8-4e23-933a-b2290dea93ba)
+
 > [!IMPORTANT]
 > 
 > * If you want to install Lua on system-wide directories like ```C:\Program Files\Lua``` or ```C:\Program Files(x86)\Lua```, close the command prompt and open ```cmd``` again as administrator (Run as Administrator);
