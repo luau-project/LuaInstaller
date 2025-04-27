@@ -21,45 +21,41 @@ namespace LuaInstaller.Core
             }
         }
 
-        private const int UNINITIALIZED_ARCH = -1;
-        private int _arch;
-        private ArchitectureSelector()
-        {
-            _arch = UNINITIALIZED_ARCH;
-        }
+        private readonly LuaInstaller.Core.Architecture _arch;
 
-#if NET6_0_OR_GREATER
-        public Architecture Architecture
+        public LuaInstaller.Core.Architecture Architecture
         {
             get
             {
-                if (_arch == UNINITIALIZED_ARCH)
-                {
-                    Architecture result = Architecture.X86;
-
-                    System.Runtime.InteropServices.Architecture architecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-                    switch (architecture)
-                    {
-                        case System.Runtime.InteropServices.Architecture.Arm64:
-                            {
-                                result = Architecture.ARM64;
-                                break;
-                            }
-                        case System.Runtime.InteropServices.Architecture.X64:
-                            {
-                                result = Architecture.X64;
-                                break;
-                            }
-                        default:
-                            {
-                                break;
-                            }
-                    }
-                    _arch = (int)result;
-                }
-
-                return (Architecture)_arch;
+                return _arch;
             }
+        }
+
+#if NET6_0_OR_GREATER
+        private ArchitectureSelector()
+        {
+            Architecture result = Architecture.X86;
+
+            System.Runtime.InteropServices.Architecture architecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+            switch (architecture)
+            {
+                case System.Runtime.InteropServices.Architecture.Arm64:
+                    {
+                        result = Architecture.ARM64;
+                        break;
+                    }
+                case System.Runtime.InteropServices.Architecture.X64:
+                    {
+                        result = Architecture.X64;
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+
+            _arch = result;
         }
 #else
 
@@ -130,106 +126,98 @@ namespace LuaInstaller.Core
             public static extern void GetNativeSystemInfo(SYSTEM_INFO lpSystemInfo);
         }
 
-        public LuaInstaller.Core.Architecture Architecture
+        private ArchitectureSelector()
         {
-            get
+            LuaInstaller.Core.Architecture result = LuaInstaller.Core.Architecture.X86;
+
+            IntPtr kernel32HModule = NativeMethods.LoadLibraryExW(NativeMethods.KERNEL32, IntPtr.Zero, NativeMethods.LOAD_LIBRARY_SEARCH_SYSTEM32);
+            if (kernel32HModule != IntPtr.Zero)
             {
-                if (_arch == UNINITIALIZED_ARCH)
+                IntPtr IsWow64Process2HModule = NativeMethods.GetProcAddress(kernel32HModule, "IsWow64Process2");
+
+                if (IsWow64Process2HModule == IntPtr.Zero)
                 {
-                    LuaInstaller.Core.Architecture result = LuaInstaller.Core.Architecture.X86;
+                    NativeMethods.IsWow64Process2FunctionPointer IsWow64Process = Marshal.GetDelegateForFunctionPointer
+                        <NativeMethods.IsWow64Process2FunctionPointer>(IsWow64Process2HModule);
 
-                    IntPtr kernel32HModule = NativeMethods.LoadLibraryExW(NativeMethods.KERNEL32, IntPtr.Zero, NativeMethods.LOAD_LIBRARY_SEARCH_SYSTEM32);
-                    if (kernel32HModule != IntPtr.Zero)
-                    {
-                        IntPtr IsWow64Process2HModule = NativeMethods.GetProcAddress(kernel32HModule, "IsWow64Process2");
-
-                        if (IsWow64Process2HModule == IntPtr.Zero)
-                        {
-                            NativeMethods.IsWow64Process2FunctionPointer IsWow64Process = Marshal.GetDelegateForFunctionPointer
-                                <NativeMethods.IsWow64Process2FunctionPointer>(IsWow64Process2HModule);
-
-                            IntPtr mem = IntPtr.Zero;
+                    IntPtr mem = IntPtr.Zero;
                             
-                            try
-                            {
-                                mem = Marshal.AllocHGlobal(2 * sizeof(ushort));
+                    try
+                    {
+                        mem = Marshal.AllocHGlobal(2 * sizeof(ushort));
                                 
-                                if (mem != IntPtr.Zero)
-                                {
-                                    IntPtr pProcessMachinePtr = mem;
-                                    IntPtr pNativeMachinePtr = IntPtr.Add(mem, sizeof(ushort));
-
-                                    if (IsWow64Process(NativeMethods.GetCurrentProcess(), pProcessMachinePtr, pNativeMachinePtr))
-                                    {
-                                        ushort pProcessMachine = (ushort)Marshal.ReadInt16(pProcessMachinePtr);
-                                        ushort pNativeMachine = (ushort)Marshal.ReadInt16(pNativeMachinePtr);
-
-                                        switch (pProcessMachine)
-                                        {
-                                            case NativeMethods.IMAGE_FILE_MACHINE_AMD64:
-                                                {
-                                                    result = LuaInstaller.Core.Architecture.X64;
-                                                    break;
-                                                }
-                                            case NativeMethods.IMAGE_FILE_MACHINE_ARM64:
-                                                {
-                                                    result = LuaInstaller.Core.Architecture.ARM64;
-                                                    break;
-                                                }
-                                            default:
-                                                {
-                                                    break;
-                                                }
-                                        }
-                                    }
-                                    else
-                                    {
-#if TARGET_AMD64
-                                        result = LuaInstaller.Core.Architecture.ARM64;
-#else
-                                        result = Environment.Is64BitOperatingSystem ? LuaInstaller.Core.Architecture.X64 : LuaInstaller.Core.Architecture.X86;
-#endif
-                                    }
-                                }
-                            }
-                            finally
-                            {
-                                if (mem != IntPtr.Zero)
-                                {
-                                    Marshal.FreeHGlobal(mem);
-                                }
-                            }
-                        }
-                        else // failed to find IsWow64Process2 on kernel32
+                        if (mem != IntPtr.Zero)
                         {
-                            NativeMethods.SYSTEM_INFO info = new NativeMethods.SYSTEM_INFO();
-                            NativeMethods.GetNativeSystemInfo(info);
+                            IntPtr pProcessMachinePtr = mem;
+                            IntPtr pNativeMachinePtr = IntPtr.Add(mem, sizeof(ushort));
 
-                            switch (info.DUMMYUNIONNAME.DUMMYSTRUCTNAME.wProcessorArchitecture)
+                            if (IsWow64Process(NativeMethods.GetCurrentProcess(), pProcessMachinePtr, pNativeMachinePtr))
                             {
-                                case NativeMethods.PROCESSOR_ARCHITECTURE_AMD64:
-                                    {
-                                        result = LuaInstaller.Core.Architecture.X64;
-                                        break;
-                                    }
-                                case NativeMethods.PROCESSOR_ARCHITECTURE_ARM64:
-                                    {
-                                        result = LuaInstaller.Core.Architecture.ARM64;
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        break;
-                                    }
+                                ushort pProcessMachine = (ushort)Marshal.ReadInt16(pProcessMachinePtr);
+                                ushort pNativeMachine = (ushort)Marshal.ReadInt16(pNativeMachinePtr);
+
+                                switch (pProcessMachine)
+                                {
+                                    case NativeMethods.IMAGE_FILE_MACHINE_AMD64:
+                                        {
+                                            result = LuaInstaller.Core.Architecture.X64;
+                                            break;
+                                        }
+                                    case NativeMethods.IMAGE_FILE_MACHINE_ARM64:
+                                        {
+                                            result = LuaInstaller.Core.Architecture.ARM64;
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+#if TARGET_ARM64
+                                result = LuaInstaller.Core.Architecture.ARM64;
+#else
+                                result = Environment.Is64BitOperatingSystem ? LuaInstaller.Core.Architecture.X64 : LuaInstaller.Core.Architecture.X86;
+#endif
                             }
                         }
                     }
-
-                    _arch = (int)result;
+                    finally
+                    {
+                        if (mem != IntPtr.Zero)
+                        {
+                            Marshal.FreeHGlobal(mem);
+                        }
+                    }
                 }
+                else // failed to find IsWow64Process2 on kernel32
+                {
+                    NativeMethods.SYSTEM_INFO info = new NativeMethods.SYSTEM_INFO();
+                    NativeMethods.GetNativeSystemInfo(info);
 
-                return (LuaInstaller.Core.Architecture)_arch;
+                    switch (info.DUMMYUNIONNAME.DUMMYSTRUCTNAME.wProcessorArchitecture)
+                    {
+                        case NativeMethods.PROCESSOR_ARCHITECTURE_AMD64:
+                            {
+                                result = LuaInstaller.Core.Architecture.X64;
+                                break;
+                            }
+                        case NativeMethods.PROCESSOR_ARCHITECTURE_ARM64:
+                            {
+                                result = LuaInstaller.Core.Architecture.ARM64;
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+                    }
+                }
             }
+
+            _arch = result;
         }
 #endif
     }

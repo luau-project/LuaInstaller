@@ -213,7 +213,7 @@ namespace LuaInstaller.Console
 
             if (archArg == null)
             {
-                arch = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
+                arch = ArchitectureSelector.Instance.Architecture;
             }
             else if (!Enum.TryParse(archArg.ToUpperInvariant(), out arch))
             {
@@ -224,6 +224,7 @@ namespace LuaInstaller.Console
             {
                 case Architecture.X86:
                 case Architecture.X64:
+                case Architecture.ARM64:
                     {
                         if (vsVer == null)
                         {

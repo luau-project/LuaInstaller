@@ -226,7 +226,7 @@ requires 'Administrator' privileges, so you must
                     case "list-vs":
                         {
                             IInstalledComponents components = new InstalledComponents();
-                            Architecture arch = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
+                            Architecture arch = ArchitectureSelector.Instance.Architecture;
 
                             foreach (VisualStudio vs in components.AllVisualStudioByArch(arch))
                             {
@@ -257,7 +257,7 @@ requires 'Administrator' privileges, so you must
                     case "list-win-sdk":
                         {
                             IInstalledComponents components = new InstalledComponents();
-                            Architecture arch = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
+                            Architecture arch = ArchitectureSelector.Instance.Architecture;
 
                             foreach (WindowsSdk sdk in components.AllWindowsSdkByArch(arch))
                             {
