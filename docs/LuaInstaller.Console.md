@@ -13,8 +13,10 @@ This tool is meant to be used from the command prompt ```cmd.exe``` or in CI ser
     * [List Lua versions installable by these tools](#list-lua-versions-installable-by-these-tools)
     * [List MSVC versions installed in the system for x86 compilation](#list-msvc-versions-installed-in-the-system-for-x86-compilation)
     * [List MSVC versions installed in the system for x64 compilation](#list-msvc-versions-installed-in-the-system-for-x64-compilation)
+    * [List MSVC versions installed in the system for arm64 compilation](#list-msvc-versions-installed-in-the-system-for-arm64-compilation)
     * [List Windows SDK versions installed in the system for x86 compilation](#list-windows-sdk-versions-installed-in-the-system-for-x86-compilation)
     * [List Windows SDK versions installed in the system for x64 compilation](#list-windows-sdk-versions-installed-in-the-system-for-x64-compilation)
+    * [List Windows SDK versions installed in the system for arm64 compilation](#list-windows-sdk-versions-installed-in-the-system-for-arm64-compilation)
 * [Installation](#installation)
     * [Install the latest Lua using the most recent tools](#install-the-latest-lua-using-the-most-recent-tools)
     * [Install a specific Lua version on a directory employing the most recent tools](#install-a-specific-lua-version-on-a-directory-employing-the-most-recent-tools)
@@ -23,7 +25,7 @@ This tool is meant to be used from the command prompt ```cmd.exe``` or in CI ser
 ## Get Informations
 
 ```txt
-LuaInstaller.Console.exe [ /? | help ]
+LuaInstaller.Console.exe [ /? | help | -h | --help ]
     Displays this help message
 
 LuaInstaller.Console.exe [ -v | --version ]
@@ -38,8 +40,9 @@ LuaInstaller.Console.exe list-lua
 
 LuaInstaller.Console.exe list-vs
     Lists all MSVC compilers found
-    for x64 on 64 Bit Operating
-    Systems or x86 otherwise.
+    matching the architecture
+    (x86, x64 or ARM64) of the
+    Operating System
 
 LuaInstaller.Console.exe list-vs-x86
     Lists all MSVC x86 toolset
@@ -49,16 +52,24 @@ LuaInstaller.Console.exe list-vs-x64
     Lists all MSVC x64 toolset
     compilers found
 
+LuaInstaller.Console.exe list-vs-arm64
+    Lists all MSVC ARM64 toolset
+    compilers found
+
 LuaInstaller.Console.exe list-win-sdk
     Lists all Windows SDK found
-    for x64 on 64 Bit Operating
-    Systems or x86 otherwise
+    matching the architecture
+    (x86, x64 or ARM64) of the
+    Operating System
 
 LuaInstaller.Console.exe list-win-sdk-x86
     Lists all Windows SDK x86 found
 
 LuaInstaller.Console.exe list-win-sdk-x64
     Lists all Windows SDK x64 found
+
+LuaInstaller.Console.exe list-win-sdk-arm64
+    Lists all Windows SDK ARM64 found
 ```
 
 ### Display the help message
@@ -97,6 +108,12 @@ LuaInstaller.Console.exe list-vs-x86
 LuaInstaller.Console.exe list-vs-x64
 ```
 
+### List MSVC versions installed in the system for arm64 compilation
+
+```batch
+LuaInstaller.Console.exe list-vs-arm64
+```
+
 ### List Windows SDK versions installed in the system for x86 compilation
 
 ```batch
@@ -107,6 +124,12 @@ LuaInstaller.Console.exe list-win-sdk-x86
 
 ```batch
 LuaInstaller.Console.exe list-win-sdk-x64
+```
+
+### List Windows SDK versions installed in the system for arm64 compilation
+
+```batch
+LuaInstaller.Console.exe list-win-sdk-arm64
 ```
 
 ## Installation
@@ -123,11 +146,12 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
         Lua version to install
         e.g.: installs Lua 5.1.5
 
-    arch=[ x86 | X86 | x64 | X64 ]
+    arch=[ x86 | X86 | x64 | X64 | arm64 | ARM64 ]
         Generates machine code for the
         specified platform
-        Defaults to x64 on 64 Bit Operating
-        Systems or x86 otherwise.
+        Defaults to the architecture
+        (x86, x64 or ARM64) of the
+        Operating System.
 
     vs=14.0
         Uses a specific version of the
@@ -154,20 +178,20 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
 LuaInstaller.Console.exe install
 ```
 
-*Description*: Installs the latest version of Lua, using the latest version of MSVC and Windows SDK for x64 on a 64 Bit operating system or x86 architecture otherwise.
+*Description*: Installs the latest version of Lua, using the latest version of MSVC and Windows SDK, and building the source code matching the architecture (x86, x64 or ARM64) of the Operating System.
 
 ### Install a specific Lua version on a directory employing the most recent tools
 
 ```batch
-LuaInstaller.Console.exe install "dest-dir=C:\Lua-5.2.4" version=5.2.4
+LuaInstaller.Console.exe install "dest-dir=C:\Lua-5.2.4" "version=5.2.4"
 ```
 
-*Description*: Installs Lua 5.2.4, using the latest version of MSVC and Windows SDK for x64 on a 64 Bit operating system or x86 architecture otherwise.
+*Description*: Installs Lua 5.2.4, using the latest version of MSVC and Windows SDK, and building the source code matching the architecture (x86, x64 or ARM64) of the Operating System.
 
 ### Machine-wide installation (Run As Admin - required)
 
 ```batch
-LuaInstaller.Console.exe install "dest-dir=C:\Program Files (x86)\Lua" version=5.1.5 env-var=machine
+LuaInstaller.Console.exe install "dest-dir=C:\Program Files (x86)\Lua" "version=5.1.5" "env-var=machine"
 ```
 
 *Description*: Installs Lua ```5.1.5``` in the ```C:\Program Files (x86)\Lua``` folder and also sets environment variables

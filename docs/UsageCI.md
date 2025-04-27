@@ -6,12 +6,12 @@ By the use of ```LuaInstaller.Console```, you can setup continuous integration /
 
 ## Table of Contents
 
-* [Setup Lua](#setup-lua)
-* [Setup Lua and LuaRocks](#setup-lua-and-luarocks)
+* [Setup Lua (x86, x64, arm64)](#setup-lua-x86-x64-arm64)
+* [Setup Lua and LuaRocks (x86, x64)](#setup-lua-and-luarocks-x86-x64)
 
-## Setup Lua
+## Setup Lua (x86, x64, arm64)
 
-Below, in a GitHub workflow, we setup different versions of Lua, building for x64 and x86 architectures.
+Below, in a GitHub workflow, we setup different versions of Lua, building for x86, x64 and arm64 architectures.
 
 > [!TIP]
 > 
@@ -39,11 +39,12 @@ jobs:
           - 5.2.4
           - 5.3.6
           - 5.4.7
-        
+
         arch:
           - x64
           - x86
-    
+          - arm64
+
     steps:
 
       - name: Sanity check the Lua version
@@ -54,11 +55,11 @@ jobs:
             Write-Host "Invalid Lua version";
             exit 1;
           }
-      
+
       - name: Sanity check the architecture
         shell: pwsh
         run: |
-          if (-not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
+          if ("${{ matrix.arch }}".ToLower() -ne "arm64" -and -not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
           {
             Write-Host "Invalid architecture";
             exit 1;
@@ -89,7 +90,7 @@ jobs:
 
           # Add LuaInstaller.Console to the PATH environment variable
           Add-Content "${{ github.path }}" "${luainstaller_path}";
-          
+
       - name: Install Lua ${{ matrix.lua-version }}
         run: |
           LuaInstaller.Console install "dest-dir=${{ env.LUA_DIR }}" "version=${{ matrix.lua-version }}" "arch=${{ matrix.arch }}"
@@ -99,16 +100,16 @@ jobs:
         run: |
           $lua_bin = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
           Add-Content "${{ github.path }}" "${lua_bin}";
-          
+
       - name: Test Lua ${{ matrix.lua-version }}
         run: lua -v
-      
+
       - name: Setup Lua ${{ matrix.lua-version }} for CMake
         shell: pwsh
         run: |
           $cmake_module_path = "$env:CMAKE_MODULE_PATH";
           Add-Content "${{ github.env }}" "CMAKE_MODULE_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
-      
+
       - name: Setup Lua ${{ matrix.lua-version }} for pkg-config
         shell: pwsh
         run: |
@@ -116,12 +117,12 @@ jobs:
             Where-Object Name -Like "lua*.pc" |
             Select-Object -ExpandProperty FullName -First 1 |
             Split-Path;
-          
+
           $pkg_config_path = "$env:PKG_CONFIG_PATH";
           Add-Content "${{ github.env }}" "PKG_CONFIG_PATH=${lua_pc_dir};${pkg_config_path}";
 ```
 
-## Setup Lua and LuaRocks
+## Setup Lua and LuaRocks (x86, x64)
 
 This time, in another GitHub workflow, we setup Lua and LuaRocks. At the end of the workflow, we install a few libraries using LuaRocks.
 
@@ -148,11 +149,11 @@ jobs:
           - 5.2.4
           - 5.3.6
           - 5.4.7
-        
+
         arch:
           - x64
           - x86
-    
+
     steps:
 
       - name: Sanity check the Lua version
@@ -163,7 +164,7 @@ jobs:
             Write-Host "Invalid Lua version";
             exit 1;
           }
-      
+
       - name: Sanity check the architecture
         shell: pwsh
         run: |
@@ -172,7 +173,7 @@ jobs:
             Write-Host "Invalid architecture";
             exit 1;
           }
-      
+
       - name: Set environment variable to hold Lua's installation directory
         shell: pwsh
         run: |
@@ -198,7 +199,7 @@ jobs:
 
           # Add LuaInstaller.Console to the PATH environment variable
           Add-Content "${{ github.path }}" "${luainstaller_path}";
-          
+
       - name: Install Lua ${{ matrix.lua-version }}
         run: |
           LuaInstaller.Console install "dest-dir=${{ env.LUA_DIR }}" "version=${{ matrix.lua-version }}" "arch=${{ matrix.arch }}"
@@ -208,16 +209,16 @@ jobs:
         run: |
           $lua_bin = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
           Add-Content "${{ github.path }}" "${lua_bin}";
-          
+
       - name: Test Lua ${{ matrix.lua-version }}
         run: lua -v
-      
+
       - name: Setup Lua ${{ matrix.lua-version }} for CMake
         shell: pwsh
         run: |
           $cmake_module_path = "$env:CMAKE_MODULE_PATH";
           Add-Content "${{ github.env }}" "CMAKE_MODULE_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
-      
+
       - name: Setup Lua ${{ matrix.lua-version }} for pkg-config
         shell: pwsh
         run: |
@@ -225,10 +226,10 @@ jobs:
             Where-Object Name -Like "lua*.pc" |
             Select-Object -ExpandProperty FullName -First 1 |
             Split-Path;
-          
+
           $pkg_config_path = "$env:PKG_CONFIG_PATH";
           Add-Content "${{ github.env }}" "PKG_CONFIG_PATH=${lua_pc_dir};${pkg_config_path}";
-      
+
       # Setting up LuaRocks
       - name: Set environment variable to LuaRocks download URL depending on arch
         shell: pwsh
@@ -266,15 +267,15 @@ jobs:
             Where-Object Name -EQ "luarocks.exe" |
             Select-Object -ExpandProperty FullName -First 1 |
             Split-Path;
-          
+
           # Add LuaRocks to PATH
           Add-Content "${{ github.path }}" "${luarocks_dir}";
-      
+
       - name: Setup MSVC dev-prompt for LuaRocks configuration
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
-      
+
       - name: Configure LuaRocks for Lua ${{ matrix.lua-version }}
         shell: pwsh
         run: |
@@ -283,13 +284,13 @@ jobs:
           $lua_short_version = "${{ matrix.lua-version }}" -split "\." |
             Select-Object -First 2 |
             Join-String -Separator ".";
-          
+
           luarocks config lua_version $lua_short_version;
 
           # Update environment variables with variables from LuaRocks
           $luarocks_path = luarocks path;
           Add-Content "${{ github.env }}" $luarocks_path.Replace("""", "").Replace("'", "").Replace("SET ", "");
-      
+
       - name: Install a few libraries through LuaRocks
         run: |
           luarocks install luafilesystem

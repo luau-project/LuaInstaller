@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     paths-ignore:
-      - "**.md"
-      - "docs/**"
+      - "docs"
+      - "**/*.md"
   pull_request:
     paths-ignore:
-      - "**.md"
-      - "docs/**"
+      - "docs"
+      - "**/*.md"
 
 jobs:
 
@@ -24,12 +24,27 @@ jobs:
         arch:
           - x64
           - x86
+          - arm64
 
     uses: ./.github/workflows/lfs.yaml
     with:
       lua-version: ${{ matrix.lua-version }}
       arch: ${{ matrix.arch }}
-  
+
+  lfs-arm64:
+    name: LuaFileSystem (${{ matrix.lua-version }} ARM64)
+    strategy:
+      matrix:
+        lua-version:
+          - 5.1.5
+          - 5.2.4
+          - 5.3.6
+          - 5.4.7
+
+    uses: ./.github/workflows/lfs-arm64.yaml
+    with:
+      lua-version: ${{ matrix.lua-version }}
+
   lgi:
     name: LGI (${{ matrix.lua-version }} GTK ${{ matrix.gtk-major-version }})
     strategy:
@@ -55,6 +70,7 @@ jobs:
         arch:
           - x64
           - x86
+          - arm64
 
     uses: ./.github/workflows/release.yaml
     if: ${{ github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/') }}
@@ -62,4 +78,5 @@ jobs:
       arch: ${{ matrix.arch }}
     needs:
       - lfs
+      - lfs-arm64
       - lgi

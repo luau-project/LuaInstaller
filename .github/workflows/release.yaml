@@ -19,7 +19,7 @@ jobs:
 
       - name: Check arch input
         run: |
-          $allowed_archs = "x86", "x64";
+          $allowed_archs = "x86", "x64", "arm64";
           if (-not ($allowed_archs -contains "${{ inputs.arch }}"))
           {
             Write-Host "Arch not found";
