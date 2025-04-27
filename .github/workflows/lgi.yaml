@@ -22,7 +22,7 @@ jobs:
       
     steps:
 
-      - name: Check lua-version input
+      - name: Check gtk-major-version input
         run: |
           if (-not ("${{ inputs.gtk-major-version }}" -match "^(3|4)$"))
           {
