@@ -55,6 +55,29 @@ namespace LuaInstaller.Core
                     }
                 }
             }
+            else if (arch == Architecture.ARM64)
+            {
+                string toolsetBinDir = Path.Combine(version.VcDir, "bin", "arm64");
+
+                string cl = Path.Combine(toolsetBinDir, "cl.exe");
+                string link = Path.Combine(toolsetBinDir, "link.exe");
+
+                if (File.Exists(cl) && File.Exists(link))
+                {
+                    VisualStudioToolset toolset = new VisualStudioToolset(cl, link);
+
+                    string include = Path.Combine(version.VcDir, "include");
+                    string lib = Path.Combine(version.VcDir, "lib", "arm64");
+
+                    if (Directory.Exists(include) && Directory.Exists(lib))
+                    {
+                        IncludeDirectories includeDirs = new IncludeDirectories(new string[1] { include });
+                        LibPathDirectories libDirs = new LibPathDirectories(new string[1] { lib });
+
+                        result = new VisualStudio(version, toolset, arch, includeDirs, libDirs);
+                    }
+                }
+            }
 
             return result;
         }

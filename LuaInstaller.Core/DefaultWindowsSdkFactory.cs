@@ -23,7 +23,7 @@ namespace LuaInstaller.Core
 
             WindowsSdk windowsSdk = null;
 
-            if (arch == Architecture.X86 || arch == Architecture.X64)
+            if (arch == Architecture.X86 || arch == Architecture.X64 || arch == Architecture.ARM64)
             {
                 string productDir = null;
 

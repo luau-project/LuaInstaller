@@ -8,6 +8,13 @@ namespace LuaInstaller.Core
 {
     public class VisualStudioVersionsFromSetupApi : IVisualStudioVersionLocator
     {
+        private const string VISUAL_STUDIO_VC_COMPONENT_ID =
+#if TARGET_ARM64
+        "Microsoft.VisualStudio.Component.VC.Tools.ARM64";
+#else
+        "Microsoft.VisualStudio.Component.VC.Tools.x86.x64";
+#endif
+
         private static readonly Regex _rgx;
 
         static VisualStudioVersionsFromSetupApi()
@@ -29,7 +36,7 @@ namespace LuaInstaller.Core
                 ISetupPackageReference packageReference = packageReferences[i];
                 string id = packageReference.GetId();
 
-                if (id.Equals("Microsoft.VisualStudio.Component.VC.Tools.x86.x64", StringComparison.InvariantCultureIgnoreCase))
+                if (id.Equals(VISUAL_STUDIO_VC_COMPONENT_ID, StringComparison.InvariantCultureIgnoreCase))
                 {
                     string vsDir = setupInstance.GetInstallationPath();
 

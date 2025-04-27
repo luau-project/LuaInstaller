@@ -8,6 +8,9 @@
         IVisualStudioEnumeration AllVisualStudioX64();
         IWindowsSdkEnumeration AllWindowsSdkX64();
 
+        IVisualStudioEnumeration AllVisualStudioARM64();
+        IWindowsSdkEnumeration AllWindowsSdkARM64();
+
         IVisualStudioEnumeration AllVisualStudioByArch(Architecture arch);
         IWindowsSdkEnumeration AllWindowsSdkByArch(Architecture arch);
     }

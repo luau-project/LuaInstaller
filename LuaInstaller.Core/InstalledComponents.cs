@@ -69,13 +69,15 @@ namespace LuaInstaller.Core
             _vsDispatcher = new Dictionary<Architecture, Func<IVisualStudioEnumeration>>
             {
                 { Architecture.X86, () => AllVisualStudioX86() },
-                { Architecture.X64, () => AllVisualStudioX64() }
+                { Architecture.X64, () => AllVisualStudioX64() },
+                { Architecture.ARM64, () => AllVisualStudioARM64() }
             };
 
             _winsdkDispatcher = new Dictionary<Architecture, Func<IWindowsSdkEnumeration>>
             {
                 { Architecture.X86, () => AllWindowsSdkX86() },
-                { Architecture.X64, () => AllWindowsSdkX64() }
+                { Architecture.X64, () => AllWindowsSdkX64() },
+                { Architecture.ARM64, () => AllWindowsSdkARM64() }
             };
         }
 
@@ -108,6 +110,11 @@ namespace LuaInstaller.Core
             return new VisualStudioEnumeration(AllVisualStudioCore(Architecture.X86));
         }
 
+        public IVisualStudioEnumeration AllVisualStudioARM64()
+        {
+            return new VisualStudioEnumeration(AllVisualStudioCore(Architecture.ARM64));
+        }
+
         private IEnumerable<VisualStudio> AllVisualStudioCore(Architecture arch)
         {
             List<VisualStudio> visualStudios = new List<VisualStudio>();
@@ -138,6 +145,11 @@ namespace LuaInstaller.Core
         public IWindowsSdkEnumeration AllWindowsSdkX86()
         {
             return new WindowsSdkEnumeration(AllWindowsSdkCore(Architecture.X86));
+        }
+
+        public IWindowsSdkEnumeration AllWindowsSdkARM64()
+        {
+            return new WindowsSdkEnumeration(AllWindowsSdkCore(Architecture.ARM64));
         }
 
         private IEnumerable<WindowsSdk> AllWindowsSdkCore(Architecture arch)
