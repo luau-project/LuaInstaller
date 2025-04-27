@@ -24,7 +24,6 @@ jobs:
         arch:
           - x64
           - x86
-          - arm64
 
     uses: ./.github/workflows/lfs.yaml
     with:
