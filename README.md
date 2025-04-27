@@ -14,6 +14,7 @@ The toolset available here aids in the process to download, build and install Lu
     * [Setup](#setup)
     * [Running](#running)
 * [For Developers](#for-developers)
+    * [Running from the command line](#running-from-the-command-line)
 * [Contributors](#contributors)
 
 ## For End-Users
@@ -64,6 +65,23 @@ The toolset available here aids in the process to download, build and install Lu
 * Are you looking for CI / CD content? [check our CI examples here](./docs/UsageCI.md).
 
 * Do you want to integrate it on your project? Read the [docs](./docs/README.md).
+
+### Running from the command line
+
+1. Download and extract the latest ```LuaInstaller.Console-*.zip``` that suits better your operating system from the [Releases](https://github.com/luau-project/LuaInstaller/releases/latest) page anywhere on your computer;
+2. Open a command prompt (`cmd`) and change directory to the folder of `LuaInstaller.Console`;
+3. Install a required Lua version
+
+   ```batch
+   LuaInstaller.Console.exe install "version=5.4.7" "dest-dir=C:\Lua-5.4.7"
+   ```
+
+> [!IMPORTANT]
+> 
+> * If you want to install Lua on system-wide directories like ```C:\Program Files\Lua``` or ```C:\Program Files(x86)\Lua```, close the command prompt and open ```cmd``` again as administrator (Run as Administrator);
+> * To set environment variables, you are also required to have admin privileges on `cmd` (Run as Administrator).
+
+4. Enjoy!
 
 ## Contributors
 
