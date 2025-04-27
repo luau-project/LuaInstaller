@@ -9,6 +9,7 @@ namespace LuaInstaller.Commands
     public class InstallCommand : ICommand, INotifyPropertyChanged
     {
         private bool isInstalling;
+        private bool canExecute;
         
         public bool IsInstalling
         {
@@ -63,7 +64,21 @@ namespace LuaInstaller.Commands
         public bool CanExecute(object parameter)
         {
             LuaInstallerViewModel viewModel = (LuaInstallerViewModel)parameter;
-            return !IsInstalling && !viewModel.RefreshCommand.IsRefreshing && viewModel.DestinationDir != null && viewModel.SelectedLuaVersion != null && viewModel.SelectedLuaVersion != null && viewModel.SelectedWinSdkVersion != null;
+            bool canExecuteCurrently = !IsInstalling && 
+                !viewModel.RefreshCommand.IsRefreshing &&
+                viewModel.DestinationDir != null &&
+                viewModel.SelectedLuaVersion != null &&
+                viewModel.SelectedVisualStudioVersion != null &&
+                viewModel.SelectedWinSdkVersion != null;
+
+            if (canExecute != canExecuteCurrently)
+            {
+                canExecute = canExecuteCurrently;
+
+                OnCanExecutedChanged();
+            }
+
+            return canExecute;
         }
 
         public void Execute(object parameter)

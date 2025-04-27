@@ -302,7 +302,7 @@ namespace LuaInstaller.ViewModels
                 selectedLuaVersion = luaVersions[0];
             }
 
-            platform = Environment.Is64BitOperatingSystem ? Architecture.X64 : Architecture.X86;
+            platform = ArchitectureSelector.Instance.Architecture;
 
             IVisualStudioEnumeration vsEnum = components.AllVisualStudioByArch(platform);
 
@@ -319,6 +319,16 @@ namespace LuaInstaller.ViewModels
             );
 
             windowsSdkEnum.TryGetLatest(out selectedWinSdkVersion);
+        }
+
+        public void UpdateCanInstall()
+        {
+            installCommand.CanExecute(this);
+        }
+
+        public void UpdateCanRefresh()
+        {
+            refreshCommand.CanExecute(this);
         }
 
         private void ChangePlatform()
@@ -349,6 +359,8 @@ namespace LuaInstaller.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
+            UpdateCanInstall();
+
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

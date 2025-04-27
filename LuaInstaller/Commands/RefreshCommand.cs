@@ -9,6 +9,7 @@ namespace LuaInstaller.Commands
     public class RefreshCommand : ICommand
     {
         private bool isRefreshing;
+        private bool canRefresh;
 
         public bool IsRefreshing
         {
@@ -16,14 +17,25 @@ namespace LuaInstaller.Commands
             {
                 return isRefreshing;
             }
+            private set
+            {
+                if (isRefreshing != value)
+                {
+                    isRefreshing = value;
+                    FireRefreshing();
+                }
+            }
         }
 
-        public RefreshCommand()
+        private void FireRefreshing()
         {
-            isRefreshing = false;
+            OnCanExecutedChanged();
+            OnPropertyChanged("IsRefreshing");
         }
 
         public event EventHandler CanExecuteChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
         protected virtual void OnCanExecutedChanged()
         {
             if (CanExecuteChanged != null)
@@ -32,16 +44,30 @@ namespace LuaInstaller.Commands
             }
         }
 
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
         public bool CanExecute(object parameter)
         {
             LuaInstallerViewModel viewModel = (LuaInstallerViewModel)parameter;
-            return !isRefreshing && !viewModel.InstallCommand.IsInstalling;
+            bool canRefreshCurrently = !IsRefreshing && !viewModel.InstallCommand.IsInstalling;
+            if (canRefresh != canRefreshCurrently)
+            {
+                canRefresh = canRefreshCurrently;
+                OnCanExecutedChanged();
+                viewModel.UpdateCanInstall();
+            }
+            return canRefresh;
         }
 
         public void Execute(object parameter)
         {
-            isRefreshing = true;
-            OnCanExecutedChanged();
+            IsRefreshing = true;
 
             BackgroundWorker workerThread = new BackgroundWorker();
             workerThread.DoWork += WorkerThread_DoWork;
@@ -93,8 +119,7 @@ namespace LuaInstaller.Commands
                 viewModel.Status = "Failed to obtain versions from website";
             }
             
-            isRefreshing = false;
-            OnCanExecutedChanged();
+            IsRefreshing = false;
         }
 
         private void WorkerThread_DoWork(object sender, DoWorkEventArgs e)

@@ -75,6 +75,7 @@
             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
                 <RadioButton VerticalContentAlignment="Center" Content="x86" Margin="0,0,5,0" IsChecked="{Binding Platform, Converter={StaticResource archConverter}, ConverterParameter=x86}"/>
                 <RadioButton VerticalContentAlignment="Center" Content="x64" Margin="5,0,0,0" IsChecked="{Binding Platform, Converter={StaticResource archConverter}, ConverterParameter=x64}"/>
+                <RadioButton VerticalContentAlignment="Center" Content="ARM64" Margin="5,0,0,0" IsChecked="{Binding Platform, Converter={StaticResource archConverter}, ConverterParameter=ARM64}"/>
             </StackPanel>
 
             <Label Grid.Column="0" Grid.Row="2" Content="Installation Directory"/>
