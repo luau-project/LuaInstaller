@@ -69,12 +69,20 @@ jobs:
         arch:
           - x64
           - x86
-          - arm64
 
     uses: ./.github/workflows/release.yaml
     if: ${{ github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/') }}
     with:
       arch: ${{ matrix.arch }}
+    needs:
+      - lfs
+      - lfs-arm64
+      - lgi
+
+  release-arm64:
+    name: Release arm64
+    uses: ./.github/workflows/release-arm64.yaml
+    if: ${{ github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/') }}
     needs:
       - lfs
       - lfs-arm64
