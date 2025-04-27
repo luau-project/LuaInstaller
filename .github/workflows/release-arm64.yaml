@@ -8,7 +8,7 @@ env:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: windows-11-arm
     name: Release
 
     steps:
