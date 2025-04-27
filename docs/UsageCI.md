@@ -107,8 +107,8 @@ jobs:
       - name: Setup Lua ${{ matrix.lua-version }} for CMake
         shell: pwsh
         run: |
-          $cmake_module_path = "$env:CMAKE_MODULE_PATH";
-          Add-Content "${{ github.env }}" "CMAKE_MODULE_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
+          $cmake_module_path = "$env:CMAKE_PREFIX_PATH";
+          Add-Content "${{ github.env }}" "CMAKE_PREFIX_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
 
       - name: Setup Lua ${{ matrix.lua-version }} for pkg-config
         shell: pwsh
@@ -216,8 +216,8 @@ jobs:
       - name: Setup Lua ${{ matrix.lua-version }} for CMake
         shell: pwsh
         run: |
-          $cmake_module_path = "$env:CMAKE_MODULE_PATH";
-          Add-Content "${{ github.env }}" "CMAKE_MODULE_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
+          $cmake_module_path = "$env:CMAKE_PREFIX_PATH";
+          Add-Content "${{ github.env }}" "CMAKE_PREFIX_PATH=${{ env.LUA_DIR }};${cmake_module_path}";
 
       - name: Setup Lua ${{ matrix.lua-version }} for pkg-config
         shell: pwsh
