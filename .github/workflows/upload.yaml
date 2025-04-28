@@ -2,33 +2,29 @@ name: Upload
 
 on: workflow_dispatch
 
-env:
-  LUAINSTALLER_VERSION: 0.6.0.0
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     name: Upload
+    if: ${{ github.actor == 'luau-project' && github.triggering_actor == 'luau-project' && github.repository == 'luau-project/LuaInstaller' }}
 
     strategy:
-      fail-fast: true
       matrix:
         include:
-
           - os: windows-latest
             arch: x86
 
           - os: windows-latest
             arch: x64
 
-          - os: windows-latest
+          - os: windows-11-arm
             arch: arm64
 
     steps:
 
       - name: Check arch input
         run: |
-          $allowed_archs = "x86", "x64";
+          $allowed_archs = "x86", "x64", "arm64";
           if (-not ($allowed_archs -contains "${{ matrix.arch }}"))
           {
             Write-Host "Arch not found";
@@ -40,6 +36,23 @@ jobs:
         with:
           path: LuaInstaller
           ref: ${{ github.ref }}
+
+      - name: Retrieve LuaInstaller version and store it on environment variable
+        run: |
+          $pattern = "\<Version\>(.*?)\<\/Version\>";
+          $csproj = Join-Path -Path "LuaInstaller" -ChildPath "LuaInstaller" |
+            Join-Path -ChildPath "LuaInstaller.csproj";
+          $version_line = (Get-Content $csproj) -match $pattern;
+
+          if (-not ($version_line -match $pattern))
+          {
+            Write-Host "LuaInstaller version not found";
+            exit 1;
+          }
+
+          $version = $Matches[1];
+          $version = $version.Trim();
+          Add-Content "${{ github.env }}" "LUAINSTALLER_VERSION=${version}";
 
       - name: Set environment variables
         run: |
