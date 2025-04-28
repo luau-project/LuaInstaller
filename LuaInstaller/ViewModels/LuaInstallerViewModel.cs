@@ -31,6 +31,8 @@ namespace LuaInstaller.ViewModels
         private string status;
         private InstallationProgress progress;
 
+        private bool isArm64;
+
         public Architecture Platform
         {
             get
@@ -276,12 +278,31 @@ namespace LuaInstaller.ViewModels
             }
         }
 
+        public bool IsArm64
+        {
+            get
+            {
+                return isArm64;
+            }
+        }
+
+        public bool Isx86x64
+        {
+            get
+            {
+                return !isArm64;
+            }
+        }
+
         public LuaInstallerViewModel()
         {
             components = new InstalledComponents();
 
             refreshCommand = new RefreshCommand();
             installCommand = new InstallCommand();
+
+            platform = ArchitectureSelector.Instance.Architecture;
+            isArm64 = platform == Architecture.ARM64;
 
             status = string.Empty;
             progress = InstallationProgress.None;
@@ -301,8 +322,6 @@ namespace LuaInstaller.ViewModels
             {
                 selectedLuaVersion = luaVersions[0];
             }
-
-            platform = ArchitectureSelector.Instance.Architecture;
 
             IVisualStudioEnumeration vsEnum = components.AllVisualStudioByArch(platform);
 
