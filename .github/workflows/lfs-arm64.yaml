@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: LuaInstaller
-      
+
       - name: Set environment variables
         run: |
           $wpf_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.EndUsers;
@@ -83,11 +83,11 @@ jobs:
           Add-Content "${{ github.env }}" "LUA_DIR=${lua_dir}";
           Add-Content "${{ github.env }}" "LUAROCKS_DIR=${luarocks_dir}";
           Add-Content "${{ github.env }}" "LFS_TEST_FILE=${lfs_test_file}";
-      
+
       - name: Test LuaInstaller.Console installing Lua ${{ inputs.lua-version }}
         run: |
           $console = Join-Path "${{ env.CONSOLE_DIR }}" -ChildPath "LuaInstaller.Console.exe";
-          
+
           $commands = "/?", "list-win-sdk-arm64", "list-vs-arm64", "list-lua";
           $color = (0x1b -as [char]) + "[36m";
 
@@ -100,12 +100,12 @@ jobs:
           }
 
           Write-Host "command: ${color}install";
-          
+
           & $console install `
             "dest-dir=${{ env.LUA_DIR }}" `
             arch=arm64 `
             "version=${{ inputs.lua-version }}";
-          
+
           $luaBinDir = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
           $luaExe = Join-Path -Path $luaBinDir -ChildPath "lua.exe";
 
@@ -113,40 +113,40 @@ jobs:
 
       - name: Download LuaRocks
         run: Invoke-WebRequest -Uri https://luarocks.org/releases/luarocks-${{ env.LUAROCKS_VERSION }}-windows-32.zip -OutFile luarocks-${{ env.LUAROCKS_VERSION }}-windows-32.zip
-      
+
       - name: Extract LuaRocks
         run: Expand-Archive luarocks-${{ env.LUAROCKS_VERSION }}-windows-32.zip -DestinationPath ([System.IO.Path]::GetDirectoryName("${{ env.LUAROCKS_DIR }}"))
-      
+
       - name: Add Lua and LuaRocks to system PATH environment variable
         run: |
           $luaBinDir = Join-Path -Path "${{ env.LUA_DIR }}" -ChildPath "bin";
 
           Add-Content "${{ github.path }}" "$luaBinDir";
           Add-Content "${{ github.path }}" "${{ env.LUAROCKS_DIR }}";
-      
+
       - name: Setup MSVC dev-prompt for LuaRocks configuration
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: arm64
-      
+
       - name: Configure LuaRocks for Lua ${{ inputs.lua-version }}
         run: |
           luarocks config lua_dir "${{ env.LUA_DIR }}"
-          
+
           $lua_short_version = "${{ inputs.lua-version }}" -split "\." |
             Select-Object -First 2 |
             Join-String -Separator ".";
-          
+
           luarocks config lua_version $lua_short_version;
-      
+
       - name: Update environment variables with variables from LuaRocks
         run: |
           $luarocks_path = luarocks.exe path
           Add-Content "${{ github.env }}" $luarocks_path.Replace("""", "").Replace("'", "").Replace("SET ", "")
-      
+
       - name: Install LuaFileSystem
         run: luarocks install luafilesystem
-      
+
       # https://lunarmodules.github.io/luafilesystem/examples.html
       - name: Create a Test file for LuaFileSystem
         run: |

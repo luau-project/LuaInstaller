@@ -1,22 +1,45 @@
-name: Release (ARM64)
+name: Upload
 
-on:
-  workflow_call:
+on: workflow_dispatch
 
 env:
   LUAINSTALLER_VERSION: 0.6.0.0
 
 jobs:
-  release:
-    runs-on: windows-11-arm
-    name: Release
+  build:
+    runs-on: ${{ matrix.os }}
+    name: Upload
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+
+          - os: windows-latest
+            arch: x86
+
+          - os: windows-latest
+            arch: x64
+
+          - os: windows-latest
+            arch: arm64
 
     steps:
+
+      - name: Check arch input
+        run: |
+          $allowed_archs = "x86", "x64";
+          if (-not ($allowed_archs -contains "${{ matrix.arch }}"))
+          {
+            Write-Host "Arch not found";
+            exit 1;
+          }
 
       - name: Checkout LuaInstaller
         uses: actions/checkout@v4
         with:
           path: LuaInstaller
+          ref: ${{ github.ref }}
 
       - name: Set environment variables
         run: |
@@ -36,7 +59,7 @@ jobs:
           $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
 
           Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
-          & $dotnet_install_file -Architecture "arm64" -Version "6.0.427" -InstallDir $dotnet_dir;
+          & $dotnet_install_file -Architecture "${{ matrix.arch }}" -Version "6.0.427" -InstallDir $dotnet_dir;
 
           Add-Content "${{ github.env }}" "DOTNET_RUNNER=${dotnet_runner}";
 
@@ -51,7 +74,7 @@ jobs:
             publish LuaInstaller\LuaInstaller.Console\LuaInstaller.Console.csproj `
             -o "${{ env.CONSOLE_DIR }}" `
             -c Release `
-            -r win-arm64 `
+            -r win-${{ matrix.arch }} `
             --self-contained true
 
       - name: Build LuaInstaller
@@ -60,7 +83,7 @@ jobs:
             publish LuaInstaller\LuaInstaller\LuaInstaller.csproj `
             -o "${{ env.WPF_DIR }}" `
             -c Release `
-            -r win-arm64 `
+            -r win-${{ matrix.arch }} `
             --self-contained true
 
       - name: Prepare artifacts to upload
@@ -70,7 +93,7 @@ jobs:
 
           foreach ($dir in $dirs_to_archive)
           {
-            $archive_name = (Get-Item $dir | Select-Object -ExpandProperty Name) + "-v${{ env.LUAINSTALLER_VERSION }}-arm64.zip";
+            $archive_name = (Get-Item $dir | Select-Object -ExpandProperty Name) + "-v${{ env.LUAINSTALLER_VERSION }}-${{ matrix.arch }}.zip";
             $archive_path = Join-Path -Path "release" -ChildPath $archive_name;
 
             Compress-Archive -Path $dir -DestinationPath $archive_path;
@@ -82,12 +105,11 @@ jobs:
             Set-Content -Path $current_file_sha256_file -Value $current_file_sha256_hash -NoNewline;
             Set-Content -Path $current_file_md5_file -Value $current_file_md5_hash -NoNewline;
           }
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release-v${{ env.LUAINSTALLER_VERSION }}-arm64
+          name: release-v${{ env.LUAINSTALLER_VERSION }}-${{ matrix.arch }}
           path: release
           retention-days: 1
           if-no-files-found: error
-  
