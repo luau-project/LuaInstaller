@@ -9,10 +9,6 @@
 
 The toolset available here aids in the process to download, build and install Lua versions on Windows, downloading Lua source code directly from [https://lua.org](https://lua.org).
 
-> [!NOTE]
-> 
-> To build Lua for x86 or x64, you must be running a standard 64-bit Windows (no ARM64). Moreover, you are required to be running 64-bit Windows on ARM to build Lua targeting the ARM64 architecture.
-
 ## Table of Contents
 * [For End-Users](#for-end-users)
     * [Setup](#setup)
@@ -64,6 +60,10 @@ The toolset available here aids in the process to download, build and install Lu
 2. If everything was configured correctly, you should see each dropdown with at least one choice available:
 
 ![running](https://github.com/user-attachments/assets/47d03000-3036-403e-8fcc-3f9922ebba86)
+
+> [!NOTE]
+> 
+> Only native builds of Lua are possible (no cross-compilation). This means that you are required to be running a 64-bit Windows on ARM to build Lua targeting the ARM64 architecture.
 
 3. Make your choices and hit ```Install```;
 4. Verify that you can find ```lua.exe``` at ```FOLDER > bin```, where FOLDER means the destination directory for Lua installation.
