@@ -72,7 +72,7 @@ jobs:
           $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
 
           Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
-          & $dotnet_install_file -Architecture "${{ matrix.arch }}" -Version "6.0.427" -InstallDir $dotnet_dir;
+          & $dotnet_install_file -Architecture "${{ matrix.arch }}" -Version "6.0.428" -InstallDir $dotnet_dir;
 
           Add-Content "${{ github.env }}" "DOTNET_RUNNER=${dotnet_runner}";
 

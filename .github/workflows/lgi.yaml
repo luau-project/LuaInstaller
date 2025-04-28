@@ -77,7 +77,7 @@ jobs:
           $dotnet_runner = Join-Path -Path $dotnet_dir -ChildPath "dotnet";
 
           Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile $dotnet_install_file;
-          & $dotnet_install_file -Architecture "${{ env.ARCH }}" -Version "6.0.427" -InstallDir $dotnet_dir;
+          & $dotnet_install_file -Architecture "${{ env.ARCH }}" -Version "6.0.428" -InstallDir $dotnet_dir;
 
           & $dotnet_runner `
             restore LuaInstaller\LuaInstaller.sln;
