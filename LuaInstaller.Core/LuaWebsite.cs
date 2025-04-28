@@ -17,7 +17,7 @@ namespace LuaInstaller.Core
         private const double MAX_BASE = 2.3;
         private const int MAX_RETRIES = 3;
 
-        private const string LUA_DOWNLOAD_URL = "https://www.lua.org/ftp";
+        private const string LUA_DOWNLOAD_URL = "https://lua.org/ftp/";
         private static readonly HttpClient _client;
         private static readonly LuaVersion[] _empty;
 
@@ -29,7 +29,7 @@ namespace LuaInstaller.Core
 
         private static string GetDownloadUrlForLuaVersion(LuaVersion version)
         {
-            return string.Format("{0}/lua-{1}.tar.gz", LUA_DOWNLOAD_URL, version.Version);
+            return string.Format("{0}lua-{1}.tar.gz", LUA_DOWNLOAD_URL, version.Version);
         }
 
         private static int GenerateRandomInt32()

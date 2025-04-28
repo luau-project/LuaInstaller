@@ -7,7 +7,11 @@
 
 ## Overview
 
-The toolset available here aids in the process to download, build and install Lua versions on Windows, downloading Lua source code directly from [https://www.lua.org](https://www.lua.org). 
+The toolset available here aids in the process to download, build and install Lua versions on Windows, downloading Lua source code directly from [https://lua.org](https://lua.org).
+
+> [!NOTE]
+> 
+> To build Lua for x86 or x64, you must be running a standard 64-bit Windows (no ARM64). Moreover, you are required to be running 64-bit Windows on ARM to build Lua targeting the ARM64 architecture.
 
 ## Table of Contents
 * [For End-Users](#for-end-users)
