@@ -36,7 +36,12 @@ The toolset available here aids in the process to download, build and install Lu
     ![Step 2: Search for "Windows SDK"; Step 3: Select the most recent;](https://github.com/user-attachments/assets/5e45e783-129c-484e-a0e4-f557da6e8d5f)
     
     * **Step 4**: Search for ```latest MSVC Build Tools```;
-    * **Step 5**: Select the ```latest``` MSVC x86/x64 build tools available for x86 or x64 operating system, or the ```latest``` MSVC ARM64 build tools available for Windows on ARM64;
+    * **Step 5**: Select the ```latest``` MSVC build tools available;
+
+> [!NOTE]
+> 
+> In the image below, the latest x86/x64 build tools was chosen because it is a vanilla x64 Windows. If you are running 64-bit Windows on ARM, then check the ARM64/ARM64EC build tools
+
     * **Step 6**: In the right panel, verify that the ```Individual components``` selection shows the latest Build Tools and Windows SDK;
     * **Step 7**: Hit ```Install``` button and await the installation.
     
