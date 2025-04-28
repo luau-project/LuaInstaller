@@ -9,13 +9,16 @@ on:
       lua-version:
         required: true
         type: string
+      os:
+        required: true
+        type: string
 
 env:
   LUAROCKS_VERSION: 3.11.1
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ inputs.os }}
     name: Build
 
     steps:

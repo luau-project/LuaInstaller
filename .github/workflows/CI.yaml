@@ -16,33 +16,60 @@ jobs:
     name: LuaFileSystem (${{ matrix.lua-version }} ${{ matrix.arch }})
     strategy:
       matrix:
-        lua-version:
-          - 5.1.5
-          - 5.2.4
-          - 5.3.6
-          - 5.4.7
-        arch:
-          - x64
-          - x86
+        include:
+          - lua-version: 5.1.5
+            arch: x86
+            os: windows-latest
+
+          - lua-version: 5.2.4
+            arch: x86
+            os: windows-latest
+
+          - lua-version: 5.3.6
+            arch: x86
+            os: windows-latest
+
+          - lua-version: 5.4.7
+            arch: x86
+            os: windows-latest
+
+          - lua-version: 5.1.5
+            arch: x64
+            os: windows-latest
+
+          - lua-version: 5.2.4
+            arch: x64
+            os: windows-latest
+
+          - lua-version: 5.3.6
+            arch: x64
+            os: windows-latest
+
+          - lua-version: 5.4.7
+            arch: x64
+            os: windows-latest
+
+          - lua-version: 5.1.5
+            arch: arm64
+            os: windows-11-arm
+
+          - lua-version: 5.2.4
+            arch: arm64
+            os: windows-11-arm
+
+          - lua-version: 5.3.6
+            arch: arm64
+            os: windows-11-arm
+
+          - lua-version: 5.4.7
+            arch: arm64
+            os: windows-11-arm
 
     uses: ./.github/workflows/lfs.yaml
     with:
       lua-version: ${{ matrix.lua-version }}
       arch: ${{ matrix.arch }}
-
-  lfs-arm64:
-    name: LuaFileSystem (${{ matrix.lua-version }} ARM64)
-    strategy:
-      matrix:
-        lua-version:
-          - 5.1.5
-          - 5.2.4
-          - 5.3.6
-          - 5.4.7
-
-    uses: ./.github/workflows/lfs-arm64.yaml
-    with:
-      lua-version: ${{ matrix.lua-version }}
+      os: ${{ matrix.os }}
 
   lgi:
     name: LGI (${{ matrix.lua-version }} GTK ${{ matrix.gtk-major-version }})
