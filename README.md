@@ -59,7 +59,7 @@ The toolset available here aids in the process to download, build and install Lu
 
 2. If everything was configured correctly, you should see each dropdown with at least one choice available:
 
-![running](https://github.com/user-attachments/assets/47d03000-3036-403e-8fcc-3f9922ebba86)
+![running](https://github.com/user-attachments/assets/26bc56a5-bf56-46eb-b54a-15b9ee7fa00f)
 
 > [!NOTE]
 > 
