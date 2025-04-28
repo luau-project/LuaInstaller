@@ -7,7 +7,7 @@ By the use of ```LuaInstaller.Console```, you can setup continuous integration /
 ## Table of Contents
 
 * [Setup Lua (x86, x64, arm64)](#setup-lua-x86-x64-arm64)
-* [Setup Lua and LuaRocks (x86, x64)](#setup-lua-and-luarocks-x86-x64)
+* [Setup Lua and LuaRocks (x86, x64, arm64)](#setup-lua-and-luarocks-x86-x64-arm64)
 
 ## Setup Lua (x86, x64, arm64)
 
@@ -28,22 +28,27 @@ env:
 jobs:
 
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     name: Build
 
     strategy:
       matrix:
-
-        lua-version:
-          - 5.1.5
-          - 5.2.4
-          - 5.3.6
-          - 5.4.7
-
-        arch:
-          - x64
-          - x86
-          - arm64
+        include:
+          # x86
+          - { lua-version: "5.1.5", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.2.4", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.3.6", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.4.7", arch: "x86", os: "windows-latest" }
+          # x64
+          - { lua-version: "5.1.5", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.2.4", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.3.6", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.4.7", arch: "x64", os: "windows-latest" }
+          # arm64
+          - { lua-version: "5.1.5", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.2.4", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.3.6", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.4.7", arch: "arm64", os: "windows-11-arm" }
 
     steps:
 
@@ -52,16 +57,7 @@ jobs:
         run: |
           if (-not ("${{ matrix.lua-version }}" -match "^[0-9]+\.[0-9]+\.[0-9]+$"))
           {
-            Write-Host "Invalid Lua version";
-            exit 1;
-          }
-
-      - name: Sanity check the architecture
-        shell: pwsh
-        run: |
-          if ("${{ matrix.arch }}".ToLower() -ne "arm64" -and -not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
-          {
-            Write-Host "Invalid architecture";
+            Write-Host "Invalid Lua version. It must be on format X.Y.Z";
             exit 1;
           }
 
@@ -122,7 +118,7 @@ jobs:
           Add-Content "${{ github.env }}" "PKG_CONFIG_PATH=${lua_pc_dir};${pkg_config_path}";
 ```
 
-## Setup Lua and LuaRocks (x86, x64)
+## Setup Lua and LuaRocks (x86, x64, arm64)
 
 This time, in another GitHub workflow, we setup Lua and LuaRocks. At the end of the workflow, we install a few libraries using LuaRocks.
 
@@ -138,21 +134,27 @@ env:
 jobs:
 
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     name: Build
 
     strategy:
       matrix:
-
-        lua-version:
-          - 5.1.5
-          - 5.2.4
-          - 5.3.6
-          - 5.4.7
-
-        arch:
-          - x64
-          - x86
+        include:
+          # x86
+          - { lua-version: "5.1.5", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.2.4", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.3.6", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.4.7", arch: "x86", os: "windows-latest" }
+          # x64
+          - { lua-version: "5.1.5", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.2.4", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.3.6", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.4.7", arch: "x64", os: "windows-latest" }
+          # arm64
+          - { lua-version: "5.1.5", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.2.4", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.3.6", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.4.7", arch: "arm64", os: "windows-11-arm" }
 
     steps:
 
@@ -161,16 +163,7 @@ jobs:
         run: |
           if (-not ("${{ matrix.lua-version }}" -match "^[0-9]+\.[0-9]+\.[0-9]+$"))
           {
-            Write-Host "Invalid Lua version";
-            exit 1;
-          }
-
-      - name: Sanity check the architecture
-        shell: pwsh
-        run: |
-          if (-not ("${{ matrix.arch }}" -match "^[xX](64|86)$"))
-          {
-            Write-Host "Invalid architecture";
+            Write-Host "Invalid Lua version. It must be on format X.Y.Z";
             exit 1;
           }
 
@@ -234,7 +227,7 @@ jobs:
       - name: Set environment variable to LuaRocks download URL depending on arch
         shell: pwsh
         run: |
-          $allowed_archs = @{ x86 = "32"; x64 = "64" };
+          $allowed_archs = @{ x86 = "32"; x64 = "64"; arm64 = "64" };
           $arch_lower = "${{ matrix.arch }}".ToLower();
 
           if ($allowed_archs.Keys -contains $arch_lower)
@@ -245,7 +238,7 @@ jobs:
           }
           else
           {
-            Write-Host "Invalid arch: x64 or x86 expected, but got ${{ matrix.arch }}";
+            Write-Host "Invalid arch: x64, x86 or arm64 expected, but got ${{ matrix.arch }}";
             exit 1;
           }
 
