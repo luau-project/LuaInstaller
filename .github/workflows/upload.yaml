@@ -42,7 +42,7 @@ jobs:
           $pattern = "\<Version\>(.*?)\<\/Version\>";
           $csproj = Join-Path -Path "LuaInstaller" -ChildPath "LuaInstaller" |
             Join-Path -ChildPath "LuaInstaller.csproj";
-          $version_line = (Get-Content $csproj) -match $pattern;
+          $version_line = (Get-Content $csproj) -match $pattern | Select-Object -First 1;
 
           if (-not ($version_line -match $pattern))
           {
