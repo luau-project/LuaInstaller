@@ -5,7 +5,7 @@ namespace LuaInstaller.Core
     /// <summary>
     /// An input file for the linker.
     /// </summary>
-    public sealed class VisualStudioInputFileLinkerOption : LinkerOption
+    public sealed class VisualStudioLibInputFileLinkerOption : LinkerOption
     {
         private readonly string _inputFile;
 
@@ -14,7 +14,7 @@ namespace LuaInstaller.Core
         /// </summary>
         /// <param name="inputFile">The input file to feed the linker</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="inputFile"/> is null.</exception>
-        public VisualStudioInputFileLinkerOption(string inputFile)
+        public VisualStudioLibInputFileLinkerOption(string inputFile)
         {
             if (inputFile == null)
             {
@@ -23,7 +23,7 @@ namespace LuaInstaller.Core
 
             _inputFile = inputFile;
         }
-        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderOBJECTFILE; } }
+        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderLIBFILE; } }
         public override string ToString()
         {
             return _inputFile;

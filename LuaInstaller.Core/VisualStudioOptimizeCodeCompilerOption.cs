@@ -18,7 +18,7 @@ namespace LuaInstaller.Core
 
             _optimizationSuffix = optimizationSuffix;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderCFLAGS; } }
         public override string ToString()
         {
             return "/O" + _optimizationSuffix;

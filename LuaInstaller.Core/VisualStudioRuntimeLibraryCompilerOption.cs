@@ -20,7 +20,7 @@ namespace LuaInstaller.Core
             _prefix = prefix;
             _debug = debug;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderCFLAGS; } }
         public override string ToString()
         {
             return string.Format("/{0}{1}", _prefix, _debug ? "d" : string.Empty);

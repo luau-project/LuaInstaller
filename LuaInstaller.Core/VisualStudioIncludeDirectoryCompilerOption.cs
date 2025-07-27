@@ -15,7 +15,7 @@ namespace LuaInstaller.Core
 
             _includeDirectory = includeDirectory;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderINCLUDEDIR; } }
         public override string ToString()
         {
             return "/I" + _includeDirectory;

@@ -194,7 +194,7 @@ namespace LuaInstaller.Core
                 }
 
                 DirectoryInfo srcDirInfo = new DirectoryInfo(srcDir);
-                foreach (string srcFile in srcDirInfo.EnumerateFiles("*.c").Where(f => f.Name != "luac.c" && f.Name != "lua.c").Select(f => f.FullName))
+                foreach (string srcFile in srcDirInfo.EnumerateFiles("l*.c").Where(f => f.Name != "luac.c" && f.Name != "lua.c").Select(f => f.FullName))
                 {
                     _compiler.AddSourceFile(srcFile);
                 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace LuaInstaller.Core
 {
@@ -9,8 +10,7 @@ namespace LuaInstaller.Core
     {
         private string _buildDirectory;
         private readonly string _path;
-        private readonly ICollection<CompilerOption> _options;
-        private readonly ICollection<CompilerOption> _sourceFiles;
+        private readonly IDictionary<int, Queue<CompilerOption>> _options;
 
         public VisualStudioCompiler(string path)
         {
@@ -20,8 +20,7 @@ namespace LuaInstaller.Core
             }
 
             _path = path;
-            _options = new List<CompilerOption>();
-            _sourceFiles = new List<CompilerOption>();
+            _options = new Dictionary<int, Queue<CompilerOption>>();
         }
 
         public string BuildDirectory
@@ -78,15 +77,13 @@ namespace LuaInstaller.Core
             {
                 throw new ArgumentNullException();
             }
-
-            if (option is VisualStudioSourceFileCompilerOption)
+            Queue<CompilerOption> queue;
+            if (!_options.TryGetValue(option.CommandLineSortOrder, out queue))
             {
-                _sourceFiles.Add(option);
+                queue = new Queue<CompilerOption>();
+                _options.Add(option.CommandLineSortOrder, queue);
             }
-            else
-            {
-                _options.Add(option);
-            }
+            queue.Enqueue(option);
         }
 
         private static string FormatCompilerOption(CompilerOption option)
@@ -98,11 +95,22 @@ namespace LuaInstaller.Core
         {
             int result = 1;
 
-            string arguments = string.Format(
-                "{0} {1}",
-                string.Join(" ", _options.Select(FormatCompilerOption).ToArray()),
-                string.Join(" ", _sourceFiles.Select(FormatCompilerOption).ToArray())
-            );
+            int key;
+            ICollection<int> keys = _options.Keys;
+            int[] orderedKeys = new int[keys.Count];
+            keys.CopyTo(orderedKeys, 0);
+            Array.Sort<int>(orderedKeys);
+            StringBuilder argumentsBuilder = new StringBuilder(Math.Max(2 * orderedKeys.Length - 1, 4));
+            for (int i = 0; i < orderedKeys.Length; i++)
+            {
+                key = orderedKeys[i];
+                argumentsBuilder.Append(string.Join(" ", _options[key].Select(FormatCompilerOption)));
+                if (i < orderedKeys.Length - 1)
+                {
+                    argumentsBuilder.Append(" ");
+                }
+            }
+            string arguments = argumentsBuilder.ToString();
 
             ProcessStartInfo compilePsi = new ProcessStartInfo();
             compilePsi.UseShellExecute = false;
@@ -127,7 +135,6 @@ namespace LuaInstaller.Core
         {
             _buildDirectory = null;
             _options.Clear();
-            _sourceFiles.Clear();
         }
     }
 }

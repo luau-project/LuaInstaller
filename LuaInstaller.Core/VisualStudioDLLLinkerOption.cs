@@ -12,6 +12,7 @@ namespace LuaInstaller.Core
     /// </summary>
     public sealed class VisualStudioDLLLinkerOption : LinkerOption
     {
+        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderLDFLAGS; } }
         public override string ToString()
         {
             return "/DLL";

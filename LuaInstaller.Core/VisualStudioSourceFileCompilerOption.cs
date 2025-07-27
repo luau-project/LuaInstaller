@@ -23,7 +23,7 @@ namespace LuaInstaller.Core
 
             _srcFile = sourceFile;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderSOURCEFILE; } }
         public override string ToString()
         {
             return _srcFile;

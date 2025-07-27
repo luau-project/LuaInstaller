@@ -38,17 +38,17 @@ jobs:
           - { lua-version: "5.1.5", arch: "x86", os: "windows-latest" }
           - { lua-version: "5.2.4", arch: "x86", os: "windows-latest" }
           - { lua-version: "5.3.6", arch: "x86", os: "windows-latest" }
-          - { lua-version: "5.4.7", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.4.8", arch: "x86", os: "windows-latest" }
           # x64
           - { lua-version: "5.1.5", arch: "x64", os: "windows-latest" }
           - { lua-version: "5.2.4", arch: "x64", os: "windows-latest" }
           - { lua-version: "5.3.6", arch: "x64", os: "windows-latest" }
-          - { lua-version: "5.4.7", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.4.8", arch: "x64", os: "windows-latest" }
           # arm64
           - { lua-version: "5.1.5", arch: "arm64", os: "windows-11-arm" }
           - { lua-version: "5.2.4", arch: "arm64", os: "windows-11-arm" }
           - { lua-version: "5.3.6", arch: "arm64", os: "windows-11-arm" }
-          - { lua-version: "5.4.7", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.4.8", arch: "arm64", os: "windows-11-arm" }
 
     steps:
 
@@ -128,8 +128,8 @@ name: Setup Lua and LuaRocks
 on: [push, pull_request]
 
 env:
-  LUAINSTALLER_VERSION: 0.6.1.0
-  LUAROCKS_VERSION: 3.11.1
+  LUAINSTALLER_VERSION: 0.7.0.0
+  LUAROCKS_VERSION: 3.12.2
 
 jobs:
 
@@ -144,17 +144,17 @@ jobs:
           - { lua-version: "5.1.5", arch: "x86", os: "windows-latest" }
           - { lua-version: "5.2.4", arch: "x86", os: "windows-latest" }
           - { lua-version: "5.3.6", arch: "x86", os: "windows-latest" }
-          - { lua-version: "5.4.7", arch: "x86", os: "windows-latest" }
+          - { lua-version: "5.4.8", arch: "x86", os: "windows-latest" }
           # x64
           - { lua-version: "5.1.5", arch: "x64", os: "windows-latest" }
           - { lua-version: "5.2.4", arch: "x64", os: "windows-latest" }
           - { lua-version: "5.3.6", arch: "x64", os: "windows-latest" }
-          - { lua-version: "5.4.7", arch: "x64", os: "windows-latest" }
+          - { lua-version: "5.4.8", arch: "x64", os: "windows-latest" }
           # arm64
           - { lua-version: "5.1.5", arch: "arm64", os: "windows-11-arm" }
           - { lua-version: "5.2.4", arch: "arm64", os: "windows-11-arm" }
           - { lua-version: "5.3.6", arch: "arm64", os: "windows-11-arm" }
-          - { lua-version: "5.4.7", arch: "arm64", os: "windows-11-arm" }
+          - { lua-version: "5.4.8", arch: "arm64", os: "windows-11-arm" }
 
     steps:
 

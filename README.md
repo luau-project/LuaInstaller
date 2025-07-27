@@ -81,7 +81,7 @@ The toolset available here aids in the process to download, build and install Lu
 3. Install a required Lua version
 
    ```batch
-   LuaInstaller.Console.exe install "version=5.4.7" "dest-dir=C:\Lua-5.4.7"
+   LuaInstaller.Console.exe install "version=5.4.8" "dest-dir=C:\Lua-5.4.8"
    ```
 
    ![running-from-cmd](https://github.com/user-attachments/assets/eaf0f4cf-7dd8-4e23-933a-b2290dea93ba)

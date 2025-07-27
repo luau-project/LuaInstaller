@@ -24,7 +24,7 @@ namespace LuaInstaller.Core
 
             _outputFile = outputFile;
         }
-
+        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderOUTPUTFILE; } }
         public override string ToString()
         {
             return "/OUT:" + _outputFile;

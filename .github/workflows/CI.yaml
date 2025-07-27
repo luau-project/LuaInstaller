@@ -29,7 +29,7 @@ jobs:
             arch: x86
             os: windows-latest
 
-          - lua-version: 5.4.7
+          - lua-version: 5.4.8
             arch: x86
             os: windows-latest
 
@@ -45,7 +45,7 @@ jobs:
             arch: x64
             os: windows-latest
 
-          - lua-version: 5.4.7
+          - lua-version: 5.4.8
             arch: x64
             os: windows-latest
 
@@ -61,7 +61,7 @@ jobs:
             arch: arm64
             os: windows-11-arm
 
-          - lua-version: 5.4.7
+          - lua-version: 5.4.8
             arch: arm64
             os: windows-11-arm
 
@@ -79,7 +79,7 @@ jobs:
           - 5.1.5
           - 5.2.4
           - 5.3.6
-          - 5.4.7
+          - 5.4.8
         gtk-major-version:
           - 3
           - 4

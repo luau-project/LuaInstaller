@@ -8,6 +8,7 @@
     /// </summary>
     public sealed class VisualStudioSuppressStartupBannerLinkerOption : LinkerOption
     {
+        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderLDFLAGS; } }
         public override string ToString()
         {
             return "/nologo";

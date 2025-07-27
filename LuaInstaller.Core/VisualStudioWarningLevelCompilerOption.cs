@@ -18,7 +18,7 @@ namespace LuaInstaller.Core
 
             _level = level;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderCFLAGS; } }
         public override string ToString()
         {
             return "/W" + _level;

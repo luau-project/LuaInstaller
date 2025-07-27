@@ -135,12 +135,12 @@ of the Operating System:
 
     LuaInstaller.Console.exe install
 
-2) Installs Lua 5.4.7 in the current directory,
+2) Installs Lua 5.4.8 in the current directory,
 using the latest versions of Visual Studio and
 Windows SDK, building the source code for x64
 platforms:
 
-    LuaInstaller.Console.exe install version=5.4.7 arch=x64
+    LuaInstaller.Console.exe install version=5.4.8 arch=x64
 
 3) Installs Lua 5.1.5 in the folder
 'C:\Program Files (x86)\Lua',

@@ -25,7 +25,7 @@ namespace LuaInstaller.Core
 
             _libraryDirectory = libraryDirectory;
         }
-
+        public override int CommandLineSortOrder { get { return LinkerOption.SortOrderLIBDIR; } }
         public override string ToString()
         {
             return "/LIBPATH:" + _libraryDirectory;

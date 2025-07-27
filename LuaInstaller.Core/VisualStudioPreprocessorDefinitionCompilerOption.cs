@@ -34,7 +34,7 @@
             _name = name;
             _value = value;
         }
-
+        public override int CommandLineSortOrder { get { return CompilerOption.SortOrderPREPROCESSORMACRO; } }
         public override string ToString()
         {
             return _value == null ?

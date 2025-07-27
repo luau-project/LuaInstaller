@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace LuaInstaller.Core
 {
@@ -9,8 +10,7 @@ namespace LuaInstaller.Core
     {
         private string _buildDirectory;
         private readonly string _path;
-        private readonly ICollection<LinkerOption> _options;
-        private readonly ICollection<LinkerOption> _inputFiles;
+        private readonly IDictionary<int, Queue<LinkerOption>> _options;
 
         public VisualStudioLinker(string path)
         {
@@ -20,9 +20,7 @@ namespace LuaInstaller.Core
             }
 
             _path = path;
-
-            _options = new List<LinkerOption>();
-            _inputFiles = new List<LinkerOption>();
+            _options = new Dictionary<int, Queue<LinkerOption>>();
         }
 
         public string BuildDirectory
@@ -56,6 +54,11 @@ namespace LuaInstaller.Core
             AddLinkerOption(new VisualStudioInputFileLinkerOption(path));
         }
 
+        public void AddLibInputFile(string path)
+        {
+            AddLinkerOption(new VisualStudioLibInputFileLinkerOption(path));
+        }
+
         public void AddLibPath(string path)
         {
             AddLinkerOption(new VisualStudioLibraryDirectoryLinkerOption(path));
@@ -67,26 +70,35 @@ namespace LuaInstaller.Core
             {
                 throw new ArgumentNullException();
             }
-
-            if (option is VisualStudioInputFileLinkerOption)
+            Queue<LinkerOption> queue;
+            if (!_options.TryGetValue(option.CommandLineSortOrder, out queue))
             {
-                _inputFiles.Add(option);
+                queue = new Queue<LinkerOption>();
+                _options.Add(option.CommandLineSortOrder, queue);
             }
-            else
-            {
-                _options.Add(option);
-            }
+            queue.Enqueue(option);
         }
 
         public int Execute()
         {
             int result = 1;
 
-            string arguments = string.Format(
-                "{0} {1}",
-                string.Join(" ", _options.Select(FormatLinkerOption).ToArray()),
-                string.Join(" ", _inputFiles.Select(FormatLinkerOption).ToArray())
-            );
+            int key;
+            ICollection<int> keys = _options.Keys;
+            int[] orderedKeys = new int[keys.Count];
+            keys.CopyTo(orderedKeys, 0);
+            Array.Sort<int>(orderedKeys);
+            StringBuilder argumentsBuilder = new StringBuilder(Math.Max(2 * orderedKeys.Length - 1, 4));
+            for (int i = 0; i < orderedKeys.Length; i++)
+            {
+                key = orderedKeys[i];
+                argumentsBuilder.Append(string.Join(" ", _options[key].Select(FormatLinkerOption)));
+                if (i < orderedKeys.Length - 1)
+                {
+                    argumentsBuilder.Append(" ");
+                }
+            }
+            string arguments = argumentsBuilder.ToString();
 
             ProcessStartInfo linkPsi = new ProcessStartInfo();
             linkPsi.UseShellExecute = false;
@@ -111,7 +123,6 @@ namespace LuaInstaller.Core
         {
             _buildDirectory = null;
             _options.Clear();
-            _inputFiles.Clear();
         }
     }
 }
