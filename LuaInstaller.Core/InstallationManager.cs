@@ -157,6 +157,18 @@ namespace LuaInstaller.Core
             }
         }
 
+        private void CreateWorkDirFromSourceDir(LuaDestinationDirectory workDir, LuaSourcesDirectory sourcesDir)
+        {
+            try
+            {
+                workDir.CreateFrom(sourcesDir);
+            }
+            catch (Exception ex)
+            {
+                throw new BuildDllException("Failed to build dll", ex);
+            }
+        }
+
         private void BuildDll(string executionDir, string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
@@ -617,13 +629,13 @@ namespace LuaInstaller.Core
                 string luaSourcesDir = LuaWebsite.DownloadAndExtract(luaDownloadDir, luaExtractionDir, version);
                 OnInstallationProgressChanged(InstallationProgress.Download);
 
-                LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(luaSourcesDir);
+                LuaSourcesDirectory sourcesDir = new LuaSourcesDirectory(version, luaSourcesDir);
                 LuaDestinationDirectory workDir = new LuaDestinationDirectory(luaWorkDir);
                 LuaGeneratedBinaries generatedBinaries = new LuaGeneratedBinaries(version);
 
                 AbstractLuaCompatibility luaCompat = GetLuaCompatibility(sourcesDir.Src);
 
-                workDir.CreateFrom(sourcesDir);
+                CreateWorkDirFromSourceDir(workDir, sourcesDir);
 
                 BuildDll(
                     executionDir,

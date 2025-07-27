@@ -20,11 +20,13 @@ namespace LuaInstaller.Core
         private const string LUA_DOWNLOAD_URL = "https://lua.org/ftp/";
         private static readonly HttpClient _client;
         private static readonly LuaVersion[] _empty;
+        private static readonly LuaVersion _minimumSupportedVersion;
 
         static LuaWebsite()
         {
             _client = new HttpClient();
             _empty = new LuaVersion[0];
+            _minimumSupportedVersion = new LuaVersion(5, 1, null);
         }
 
         private static string GetDownloadUrlForLuaVersion(LuaVersion version)
@@ -192,6 +194,11 @@ namespace LuaInstaller.Core
             if (version == null)
             {
                 throw new DownloadAndExtractException("version cannot be null");
+            }
+
+            if (LuaVersionComparers.Ascending.Compare(version, _minimumSupportedVersion) < 0)
+            {
+                throw new DownloadAndExtractException(string.Format("minimum supported version is {0}", _minimumSupportedVersion));
             }
 
             string fileName = null;

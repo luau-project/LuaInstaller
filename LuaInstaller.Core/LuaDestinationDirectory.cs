@@ -87,31 +87,6 @@ namespace LuaInstaller.Core
                 {
                     System.IO.Path.Combine(sourcesDir.Path, "README"),
                     System.IO.Path.Combine(_path, "README"),
-                },
-                new string[]
-                {
-                    System.IO.Path.Combine(sourcesDir.Src, "lauxlib.h"),
-                    System.IO.Path.Combine(_include, "lauxlib.h"),
-                },
-                new string[]
-                {
-                    System.IO.Path.Combine(sourcesDir.Src, "lua.h"),
-                    System.IO.Path.Combine(_include, "lua.h"),
-                },
-                new string[]
-                {
-                    System.IO.Path.Combine(sourcesDir.Src, "lua.hpp"),
-                    System.IO.Path.Combine(_include, "lua.hpp"),
-                },
-                new string[]
-                {
-                    System.IO.Path.Combine(sourcesDir.Src, "luaconf.h"),
-                    System.IO.Path.Combine(_include, "luaconf.h"),
-                },
-                new string[]
-                {
-                    System.IO.Path.Combine(sourcesDir.Src, "lualib.h"),
-                    System.IO.Path.Combine(_include, "lualib.h"),
                 }
             };
 
@@ -123,6 +98,15 @@ namespace LuaInstaller.Core
                 if (File.Exists(fromPath))
                 {
                     File.Copy(fromPath, toPath, true);
+                }
+            }
+
+            foreach (string publicHeaderSourcePath in sourcesDir.CollectPublicHeaders())
+            {
+                string publicHeaderDestPath = System.IO.Path.Combine(_include, System.IO.Path.GetFileName(publicHeaderSourcePath));
+                if (File.Exists(publicHeaderSourcePath))
+                {
+                    File.Copy(publicHeaderSourcePath, publicHeaderDestPath, true);
                 }
             }
 
