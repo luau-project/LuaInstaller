@@ -59,7 +59,7 @@ The toolset available here aids in the process to download, build and install Lu
 
 2. If everything was configured correctly, you should see each dropdown with at least one choice available:
 
-![running](https://github.com/user-attachments/assets/26bc56a5-bf56-46eb-b54a-15b9ee7fa00f)
+<img width="821" height="684" alt="running" src="https://github.com/user-attachments/assets/f23284f4-0781-422c-9ee2-6cc133d6046d" />
 
 > [!NOTE]
 > 
@@ -84,7 +84,7 @@ The toolset available here aids in the process to download, build and install Lu
    LuaInstaller.Console.exe install "version=5.4.8" "dest-dir=C:\Lua-5.4.8"
    ```
 
-   ![running-from-cmd](https://github.com/user-attachments/assets/eaf0f4cf-7dd8-4e23-933a-b2290dea93ba)
+   <img width="1430" height="505" alt="running-from-cmd" src="https://github.com/user-attachments/assets/a7927717-ff87-4719-98f2-2e28e7f36031" />
 
 > [!IMPORTANT]
 > 
