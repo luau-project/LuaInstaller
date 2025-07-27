@@ -81,7 +81,7 @@ namespace LuaInstaller.Console
             Match keyValueMatch = null;
 
             Regex majorMinorRgx = new Regex(@"^(\d+)\.(\d+)$");
-            
+
             string archArg = null;
             string vsVer = null;
             string winsdkVer = null;

@@ -10,7 +10,7 @@ namespace LuaInstaller.Core
         private readonly ICompiler _compiler;
         private readonly ILinker _linker;
         private readonly string _objExtension;
-        
+
         public event EventHandler<InstallationProgressEventArgs> InstallationProgressChanged;
         private void OnInstallationProgressChanged(InstallationProgress progress)
         {
@@ -49,10 +49,10 @@ namespace LuaInstaller.Core
 
                 // /MD
                 _compiler.AddCompilerOption(new VisualStudioMultithreadedDLLRuntimeLibraryCompilerOption(false));
-                
+
                 // /O2
                 _compiler.AddCompilerOption(new VisualStudioO2CompilerOption());
-                
+
                 // /W3
                 _compiler.AddCompilerOption(new VisualStudioW3CompilerOption());
 
@@ -156,7 +156,7 @@ namespace LuaInstaller.Core
                 _linker.Reset();
             }
         }
-        
+
         private void BuildDll(string executionDir, string srcDir, string outputFile, VisualStudio vs, WindowsSdk winsdk, AbstractLuaCompatibility luaCompat)
         {
             string buildDir = Path.Combine(
@@ -188,10 +188,10 @@ namespace LuaInstaller.Core
                 }
 
                 Directory.CreateDirectory(buildDir);
-                
+
                 _compiler.BuildDirectory = buildDir;
                 _compiler.AddIncludeDirectory(srcDir);
-                
+
                 if (_compiler.Execute() == 0)
                 {
                     OnInstallationProgressChanged(InstallationProgress.CompileDll);
@@ -223,7 +223,7 @@ namespace LuaInstaller.Core
                 }
             }
         }
-        
+
         private void LinkInterpreter(string srcDir, string luaLibPath, string outputFile, VisualStudio vs, WindowsSdk winsdk)
         {
             try
@@ -288,10 +288,10 @@ namespace LuaInstaller.Core
                 _compiler.AddSourceFile(Path.Combine(srcDir, "lua.c"));
 
                 Directory.CreateDirectory(buildDir);
-                
+
                 _compiler.BuildDirectory = buildDir;
                 _compiler.AddIncludeDirectory(srcDir);
-                
+
                 if (_compiler.Execute() == 0)
                 {
                     OnInstallationProgressChanged(InstallationProgress.CompileInterpreter);
@@ -444,7 +444,7 @@ namespace LuaInstaller.Core
             {
                 string entryName = Path.GetFileName(entry);
                 string expectedDestSubentry = Path.Combine(destDir, entryName);
-                
+
                 if (Directory.Exists(entry))
                 {
                     if (File.Exists(expectedDestSubentry))
@@ -502,13 +502,13 @@ namespace LuaInstaller.Core
                 throw new InstallOnDestDirException("Unable to install Lua on destination directory", ex);
             }
         }
-        
+
         private void CreatePkgConfigFile(LuaDestinationDirectory destDir, LuaVersion version, LuaGeneratedBinaries generatedBinaries, AbstractLuaCompatibility luaCompat)
         {
             try
             {
                 PkgConfigOutputInfo pkgConfigOutput = new PkgConfigOutputInfo(version, generatedBinaries, destDir, luaCompat);
-                
+
                 if (pkgConfigOutput.WritePkgConfigFile())
                 {
                     OnInstallationProgressChanged(InstallationProgress.CreatePkgConfigFile);
@@ -622,7 +622,7 @@ namespace LuaInstaller.Core
                 LuaGeneratedBinaries generatedBinaries = new LuaGeneratedBinaries(version);
 
                 AbstractLuaCompatibility luaCompat = GetLuaCompatibility(sourcesDir.Src);
-                
+
                 workDir.CreateFrom(sourcesDir);
 
                 BuildDll(

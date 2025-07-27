@@ -33,7 +33,7 @@ namespace LuaInstaller.Core
                 return _array.Length;
             }
         }
-        
+
         public IEnumerator GetEnumerator()
         {
             return _array.GetEnumerator();

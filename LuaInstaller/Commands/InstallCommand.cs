@@ -10,7 +10,7 @@ namespace LuaInstaller.Commands
     {
         private bool isInstalling;
         private bool canExecute;
-        
+
         public bool IsInstalling
         {
             get
@@ -168,7 +168,7 @@ namespace LuaInstaller.Commands
             if (e.Error == null)
             {
                 LuaInstallerViewModel viewModel = (LuaInstallerViewModel)(e.Result);
-                
+
                 viewModel.Progress = InstallationProgress.None;
                 viewModel.Status = "Lua was installed successfully";
             }

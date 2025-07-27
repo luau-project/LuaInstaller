@@ -35,7 +35,7 @@ namespace LuaInstaller.Core
         private static int GenerateRandomInt32()
         {
             byte[] buffer = new byte[sizeof(int)];
-            
+
             using (RandomNumberGenerator rgn = RandomNumberGenerator.Create())
             {
                 rgn.GetBytes(buffer);
@@ -80,7 +80,7 @@ namespace LuaInstaller.Core
 
                     // a random number B between 1.7 and 2.3
                     double B = GetNextDoubleBetween(MIN_BASE, MAX_BASE, random);
-                    
+
                     // B raised to the number of retries: B^(retries).
                     // Since retries starts from 1, B^1 = B is the shortest possible
                     // waiting time.
@@ -154,7 +154,7 @@ namespace LuaInstaller.Core
 
             return result;
         }
-        
+
         [Obsolete("This method is deprecated. Use TryGetLatestVersion instead.")]
         public static LuaVersion GetLatestVersion()
         {
@@ -195,7 +195,7 @@ namespace LuaInstaller.Core
             }
 
             string fileName = null;
-            
+
             try
             {
                 fileName = Path.Combine(workingDir, string.Format("{0}.tar.gz", Guid.NewGuid().ToString("N")));
@@ -209,7 +209,7 @@ namespace LuaInstaller.Core
                 () =>
                 {
                     string downloadUrl = GetDownloadUrlForLuaVersion(version);
-                    
+
                     using (HttpResponseMessage response = _client.GetAsync(downloadUrl).Result)
                     {
                         response.EnsureSuccessStatusCode();

@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: LuaInstaller
-      
+
       - name: Set environment variables
         run: |
           $wpf_dir = Join-Path "${{ runner.temp }}" -ChildPath LuaInstaller.EndUsers;

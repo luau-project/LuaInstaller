@@ -13,7 +13,7 @@ namespace LuaInstaller.Core
             {
                 throw new ArgumentNullException("cl");
             }
-            
+
             if (link == null)
             {
                 throw new ArgumentNullException("link");
@@ -22,7 +22,7 @@ namespace LuaInstaller.Core
             _cl = cl;
             _link = link;
         }
-        
+
         public string Cl
         {
             get

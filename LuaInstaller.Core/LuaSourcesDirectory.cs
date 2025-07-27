@@ -15,7 +15,7 @@ namespace LuaInstaller.Core
                 return _path;
             }
         }
-        
+
         public string Doc
         {
             get

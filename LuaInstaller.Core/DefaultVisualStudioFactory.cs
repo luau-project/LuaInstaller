@@ -19,7 +19,7 @@ namespace LuaInstaller.Core
                 if (File.Exists(cl) && File.Exists(link))
                 {
                     VisualStudioToolset toolset = new VisualStudioToolset(cl, link);
-                    
+
                     string include = Path.Combine(version.VcDir, "include");
                     string lib = Path.Combine(version.VcDir, "lib");
 

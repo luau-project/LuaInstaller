@@ -13,7 +13,7 @@ namespace LuaInstaller.Core
         {
             _productVersionRgx = new Regex(@"^(\d+)\.(\d+)\.(\d+)$");
         }
-        
+
         public WindowsSdk Create(WindowsSdkVersion version, Architecture arch)
         {
             if (version == null)
@@ -60,7 +60,7 @@ namespace LuaInstaller.Core
                     string includeProductDir = version.Major >= 10 ?
                         Path.Combine(version.InstallationDir, "Include", productDir) :
                         Path.Combine(version.InstallationDir, "Include");
-                    
+
                     string libProductDir = version.Major > 7 ?
                         Path.Combine(version.InstallationDir, "Lib", productDir) : 
                         Path.Combine(version.InstallationDir, "Lib");
@@ -84,7 +84,7 @@ namespace LuaInstaller.Core
                             ).ToArray() :
                             new string[1] { arch == Architecture.X86 ? libProductDir : Path.Combine(libProductDir, archStr) }
                         );
-                        
+
                         windowsSdk = new WindowsSdk(version, arch, includeDirectories, libPathDirectories);
                     }
                 }

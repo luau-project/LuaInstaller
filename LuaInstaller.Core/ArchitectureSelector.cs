@@ -141,11 +141,11 @@ namespace LuaInstaller.Core
                         <NativeMethods.IsWow64Process2FunctionPointer>(IsWow64Process2HModule);
 
                     IntPtr mem = IntPtr.Zero;
-                            
+
                     try
                     {
                         mem = Marshal.AllocHGlobal(2 * sizeof(ushort));
-                                
+
                         if (mem != IntPtr.Zero)
                         {
                             IntPtr pProcessMachinePtr = mem;

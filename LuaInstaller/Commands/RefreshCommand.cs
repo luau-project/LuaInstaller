@@ -118,7 +118,7 @@ namespace LuaInstaller.Commands
                 LuaInstallerViewModel viewModel = ex.ViewModel;
                 viewModel.Status = "Failed to obtain versions from website";
             }
-            
+
             IsRefreshing = false;
         }
 

@@ -15,7 +15,7 @@
         /// <param name="name">The symbol name to be defined</param>
         public VisualStudioPreprocessorDefinitionCompilerOption(string name) : this(name, null)
         {
-            
+
         }
 
         /// <summary>

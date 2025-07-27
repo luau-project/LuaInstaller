@@ -258,7 +258,7 @@ namespace LuaInstaller.Core
             if (success = pkgConfigDir.Exists)
             {
                 string pkgConfigFilename = string.Format("lua{0}.pc", _version.ShortVersionWithoutDot);
-                
+
                 using (Stream luapc = File.OpenWrite(Path.Combine(dir, pkgConfigFilename)))
                 {
                     Write(luapc);

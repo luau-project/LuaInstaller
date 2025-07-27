@@ -141,7 +141,7 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
         Destination directory to install
         e.g.: installs Lua on C:\test
         Defaults to the current directory.
-        
+
     version=5.1.5
         Lua version to install
         e.g.: installs Lua 5.1.5

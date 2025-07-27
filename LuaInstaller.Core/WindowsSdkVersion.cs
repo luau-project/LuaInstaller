@@ -36,12 +36,12 @@ namespace LuaInstaller.Core
             {
                 throw new ArgumentOutOfRangeException("minor");
             }
-            
+
             if (installationDir == null)
             {
                 throw new ArgumentNullException("installationDir");
             }
-            
+
             if (productVersion == null)
             {
                 throw new ArgumentNullException("productVersion");
@@ -118,7 +118,7 @@ namespace LuaInstaller.Core
                 result = versionDigits[i] - otherVersionDigits[i];
                 i++;
             }
-            
+
             return result;
         }
     }

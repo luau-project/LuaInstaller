@@ -93,7 +93,7 @@ LuaInstaller.Console.exe install { OPTION=VALUE }
         Destination directory to install
         e.g.: installs Lua on C:\test
         Defaults to the current directory.
-        
+
     version=5.1.5
         Lua version to install
         e.g.: installs Lua 5.1.5
@@ -159,12 +159,12 @@ requires 'Administrator' privileges, so you must
     LuaInstaller.Console.exe install ""dest-dir=C:\Program Files (x86)\Lua"" version=5.1.5 env-var=machine
 ");
         }
-        
+
         private static int Install(string[] args, out InstallArguments installArgs)
         {
             int result = 0;
             installArgs = new InstallArguments(new InstalledComponents());
-            
+
             try
             {
                 installArgs.Process(args, 1);
@@ -353,7 +353,7 @@ requires 'Administrator' privileges, so you must
                         break;
                 }
             }
-            
+
             if (installed)
             {
                 Write("Lua was installed successfully:");

@@ -27,14 +27,14 @@ The toolset available here aids in the process to download, build and install Lu
 
 1. Visit [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com), download and install the most recent Microsoft Visual Studio C/C++ Build Tools for native desktop development (MSVC), together with the most recent Windows SDK for your operating system:
     * **Step 1**: In the startup screen of the latest ```Visual Studio Installer```, switch to ```Individual components``` tab in the top;
-    
+
     ![Step 1: Switch to Individual components tab](https://github.com/user-attachments/assets/f238d870-3ce9-4f69-8539-3c4484e08ec2)
-    
+
     * **Step 2**: Search for ```Windows SDK```;
     * **Step 3**: Select the most recent;
-    
+
     ![Step 2: Search for "Windows SDK"; Step 3: Select the most recent;](https://github.com/user-attachments/assets/5e45e783-129c-484e-a0e4-f557da6e8d5f)
-    
+
     * **Step 4**: Search for ```latest MSVC Build Tools```;
     * **Step 5**: Select the ```latest``` MSVC build tools available;
 
@@ -43,7 +43,7 @@ The toolset available here aids in the process to download, build and install Lu
 
     * **Step 6**: In the right panel, verify that the ```Individual components``` selection shows the latest Build Tools and Windows SDK;
     * **Step 7**: Hit ```Install``` button and await the installation.
-    
+
     ![Step 4: Search for latest MSVC Build Tools; Step 5: Select the latest MSVC x86/x64 build tools available; Step 6: In the right panel, verify that the Individual components selection shows the latest Build Tools and Windows SDK; Step 7: Hit Install button and await the installation.](https://github.com/user-attachments/assets/b84e383e-fb2e-48cb-86cd-132b33b0a1fc)
 
 2. Download and extract the latest ```LuaInstaller.EndUsers-*.zip``` from the [Releases](https://github.com/luau-project/LuaInstaller/releases/latest) page anywhere on your computer;
